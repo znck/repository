@@ -202,7 +202,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      * @return \Illuminate\Database\Eloquent\Model
      * @throws \Znck\Repositories\Exceptions\RepositoryException
      */
-    public function makeModel()
+    protected function makeModel()
     {
         $model = $this->app->make($this->model());
 
@@ -211,5 +211,30 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
         }
 
         return $model;
+    }
+
+    /**
+     * @param array $condition
+     * @param array $columns
+     *
+     * @return mixed
+     */
+    public function where(array $condition, $columns = ['*'])
+    {
+        $count = count($condition);
+        assert($count > 1);
+
+        $third = null;
+        $fourth = 'and';
+        if (count($condition) == 4) {
+            list($first, $second, $third, $fourth) = $condition;
+        } elseif ($count == 3) {
+            list($first, $second, $third) = $condition;
+        } else {
+            list($first, $second) = $condition;
+        }
+
+        return $this->model->where($first, $second, $third, $fourth)->get($columns);
+
     }
 }
