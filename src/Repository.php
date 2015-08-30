@@ -56,6 +56,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
         $this->criteria = $collection;
         $this->resetScope();
         $this->refreshModel();
+        $this->boot();
     }
 
     /**
@@ -236,5 +237,9 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
 
         return $this->model->where($first, $second, $third, $fourth)->get($columns);
 
+    }
+
+    protected function boot()
+    {
     }
 }
