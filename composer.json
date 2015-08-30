@@ -1,0 +1,37 @@
+{
+  "name": "znck/repositories",
+  "description": "A better way to work around Eloquent.",
+  "license": "MIT",
+  "keywords": [
+    "laravel",
+    "repository",
+    "repositories",
+    "eloquent",
+    "database"
+  ],
+  "autoload": {
+    "psr-4": {
+      "Znck\\Repositories\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Znck\\Tests\\Repositories\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Rahul Kadyan",
+      "email": "hi@znck.me"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=5.4.0",
+    "illuminate/support": "5.*",
+    "illuminate/database": "5.*"
+  },
+  "require-dev": {
+  }
+}
