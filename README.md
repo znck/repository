@@ -1,2 +1,3 @@
-# repository
-Eloquent + Repository
+# Repository [![](https://img.shields.io/travis/znck/repository.svg)](https://travis-ci.org/znck/repository) [![](https://img.shields.io/github/release/znck/repository.svg)](https://github.com/znck/repository/releases) [![](https://img.shields.io/packagist/v/znck/repository.svg)](https://packagist.org/packages/znck/repository) [![](https://img.shields.io/packagist/dt/znck/repository.svg)](https://packagist.org/packages/znck/repository)  [![](https://img.shields.io/packagist/l/znck/repository.svg)](http://znck.mit-license.org) [![](https://api.codacy.com/project/badge/5f2c6756bcb644a68344f03755c2f150)](https://www.codacy.com/app/znck/repository)
+
+Eloquent + Repository = :-)
