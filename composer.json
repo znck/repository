@@ -1,5 +1,5 @@
 {
-  "name": "znck/repositories",
+  "name": "znck/repository",
   "description": "A better way to work around Eloquent.",
   "license": "MIT",
   "keywords": [
