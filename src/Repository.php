@@ -12,39 +12,38 @@ use Znck\Repositories\Exceptions\RepositoryException;
 
 abstract class Repository implements RepositoryInterface, RepositoryCriteriaInterface
 {
-
     /**
      * Instance of laravel App.
      *
-     * @type App
+     * @var App
      */
     protected $app;
 
     /**
      * Select columns for query.
      *
-     * @type array
+     * @var array
      */
     protected $columns = ['*'];
 
     /**
      * Collection of criterion.
      *
-     * @type \Illuminate\Support\Collection
+     * @var \Illuminate\Support\Collection
      */
     protected $criteria;
 
     /**
      * Instance of the model.
      *
-     * @type \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
+     * @var \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
      */
     protected $model;
 
     /**
      * Controls whether to use criteria or not.
      *
-     * @type bool
+     * @var bool
      */
     protected $skipCriteria;
 
@@ -52,7 +51,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      * Create instance of a repository.
      *
      * @param \Illuminate\Container\Container $app
-     * @param \Illuminate\Support\Collection $collection
+     * @param \Illuminate\Support\Collection  $collection
      */
     public function __construct(App $app, Collection $collection)
     {
@@ -77,10 +76,11 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     }
 
     /**
-     * Get empty query for the Eloquent model
+     * Get empty query for the Eloquent model.
+     *
+     * @throws \Znck\Repositories\Exceptions\RepositoryException
      *
      * @return \Illuminate\Database\Eloquent\Model
-     * @throws \Znck\Repositories\Exceptions\RepositoryException
      */
     public function refreshModel()
     {
@@ -102,7 +102,8 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Set whether to use criteria or not.
      *
-     * @param  bool $status
+     * @param bool $status
+     *
      * @return $this
      */
     public function skipCriteria($status = true)
@@ -115,8 +116,9 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Set fields for queries.
      *
-     * @param  array $columns
-     * @param  bool $merge
+     * @param array $columns
+     * @param bool  $merge
+     *
      * @return $this
      */
     public function setFields(array $columns, $merge = true)
@@ -133,8 +135,9 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Create an instance of repository's model.
      *
-     * @return \Illuminate\Database\Eloquent\Model
      * @throws \Znck\Repositories\Exceptions\RepositoryException
+     *
+     * @return \Illuminate\Database\Eloquent\Model
      */
     protected function makeModel()
     {
@@ -148,7 +151,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     }
 
     /**
-     * Class name of the Eloquent model
+     * Class name of the Eloquent model.
      *
      * @return string
      */
@@ -157,7 +160,8 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Get all results.
      *
-     * @param  array|null $columns
+     * @param array|null $columns
+     *
      * @return mixed
      */
     public function all($columns = [])
@@ -168,8 +172,9 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Get result with matching id.
      *
-     * @param  string|int $id
-     * @param  array|null $columns
+     * @param string|int $id
+     * @param array|null $columns
+     *
      * @return mixed
      */
     public function find($id, $columns = ['*'])
@@ -180,10 +185,11 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Get all results with the field-value constraint.
      *
-     * @param  string $field
-     * @param  mixed $value
-     * @param  array $columns
-     * @return  mixed
+     * @param string $field
+     * @param mixed  $value
+     * @param array  $columns
+     *
+     * @return mixed
      */
     public function findBy($field, $value, $columns = [])
     {
@@ -225,7 +231,8 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Push a criterion on the repository's criteria list.
      *
-     * @param  \Znck\Repositories\Contracts\CriteriaInterface $criteria
+     * @param \Znck\Repositories\Contracts\CriteriaInterface $criteria
+     *
      * @return $this
      */
     public function pushCriteria(CriteriaInterface $criteria)
@@ -239,6 +246,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      * Apply a criterion without pushing it.
      *
      * @param \Znck\Repositories\Contracts\CriteriaInterface $criteria
+     *
      * @return $this
      */
     public function getByCriteria(CriteriaInterface $criteria)
@@ -251,8 +259,9 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Get all results paginated.
      *
-     * @param  int $perPage
-     * @param  array|null $columns
+     * @param int        $perPage
+     * @param array|null $columns
+     *
      * @return mixed
      */
     public function paginate($perPage = 15, $columns = [])
@@ -265,8 +274,9 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Get all results with given constraints.
      *
-     * @param  array $condition
-     * @param  array $columns
+     * @param array $condition
+     * @param array $columns
+     *
      * @return mixed
      */
     public function where(array $condition, $columns = [])
@@ -286,6 +296,5 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
         }
 
         return $this->model->where($first, $second, $third, $fourth)->get($columns);
-
     }
 }
