@@ -51,7 +51,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      * Create instance of a repository.
      *
      * @param \Illuminate\Container\Container $app
-     * @param \Illuminate\Support\Collection $collection
+     * @param \Illuminate\Support\Collection  $collection
      */
     public function __construct(App $app, Collection $collection)
     {
@@ -128,7 +128,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      * Set fields for queries.
      *
      * @param array $columns
-     * @param bool $merge
+     * @param bool  $merge
      *
      * @return $this
      */
@@ -161,7 +161,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      * Get result with matching id.
      *
      * @param string|int $id
-     * @param array $columns
+     * @param array      $columns
      *
      * @return mixed
      */
@@ -176,8 +176,8 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      * Get all results with the field-value constraint.
      *
      * @param string $field
-     * @param mixed $value
-     * @param array $columns
+     * @param mixed  $value
+     * @param array  $columns
      *
      * @return mixed
      */
@@ -191,7 +191,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Get all results paginated.
      *
-     * @param int $perPage
+     * @param int   $perPage
      * @param array $columns
      *
      * @return mixed
@@ -229,7 +229,6 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
         } else {
             list($first, $second) = $condition;
         }
-
 
         return $this->model->where($first, $second, $third, $fourth)->get($columns);
     }

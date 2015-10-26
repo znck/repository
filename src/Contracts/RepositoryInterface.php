@@ -8,7 +8,7 @@ interface RepositoryInterface
      * Set fields for queries.
      *
      * @param array $columns
-     * @param bool $merge
+     * @param bool  $merge
      *
      * @return $this
      */
@@ -26,7 +26,7 @@ interface RepositoryInterface
     /**
      * Get all results paginated.
      *
-     * @param int $perPage
+     * @param int        $perPage
      * @param array|null $columns
      *
      * @return mixed
@@ -37,7 +37,7 @@ interface RepositoryInterface
      * Get result with matching id.
      *
      * @param string|int $id
-     * @param array $columns
+     * @param array      $columns
      *
      * @return mixed
      */
@@ -47,8 +47,8 @@ interface RepositoryInterface
      * Get all results with the field-value constraint.
      *
      * @param string $field
-     * @param mixed $value
-     * @param array $columns
+     * @param mixed  $value
+     * @param array  $columns
      *
      * @return mixed
      */
