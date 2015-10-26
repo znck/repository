@@ -1,4 +1,6 @@
-<?php namespace Znck\Repositories\Exceptions;
+<?php
+
+namespace Znck\Repositories\Exceptions;
 
 /**
  * This file belongs to znck/repositories.
@@ -7,5 +9,4 @@
  */
 class RepositoryException extends \Exception
 {
-
 }
