@@ -8,7 +8,7 @@ interface RepositoryInterface
      * Set fields for queries.
      *
      * @param array $columns
-     * @param bool  $merge
+     * @param bool $merge
      *
      * @return $this
      */
@@ -17,42 +17,42 @@ interface RepositoryInterface
     /**
      * Get all results.
      *
-     * @param array|null $columns
+     * @param array $columns
      *
      * @return mixed
      */
-    public function all($columns = []);
+    public function all(array $columns = []);
 
     /**
      * Get all results paginated.
      *
-     * @param int        $perPage
+     * @param int $perPage
      * @param array|null $columns
      *
      * @return mixed
      */
-    public function paginate($perPage = 50, $columns = []);
+    public function paginate($perPage = 50, array $columns = []);
 
     /**
      * Get result with matching id.
      *
      * @param string|int $id
-     * @param array|null $columns
+     * @param array $columns
      *
      * @return mixed
      */
-    public function find($id, $columns = []);
+    public function find($id, array $columns = []);
 
     /**
      * Get all results with the field-value constraint.
      *
      * @param string $field
-     * @param mixed  $value
-     * @param array  $columns
+     * @param mixed $value
+     * @param array $columns
      *
      * @return mixed
      */
-    public function findBy($field, $value, $columns = []);
+    public function findBy($field, $value, array $columns = []);
 
     /**
      * Get all results with given constraints.
@@ -62,5 +62,5 @@ interface RepositoryInterface
      *
      * @return mixed
      */
-    public function where(array $condition, $columns = []);
+    public function where(array $condition, array $columns = []);
 }

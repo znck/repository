@@ -51,7 +51,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      * Create instance of a repository.
      *
      * @param \Illuminate\Container\Container $app
-     * @param \Illuminate\Support\Collection  $collection
+     * @param \Illuminate\Support\Collection $collection
      */
     public function __construct(App $app, Collection $collection)
     {
@@ -100,39 +100,6 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     }
 
     /**
-     * Set whether to use criteria or not.
-     *
-     * @param bool $status
-     *
-     * @return $this
-     */
-    public function skipCriteria($status = true)
-    {
-        $this->skipCriteria = $status;
-
-        return $this;
-    }
-
-    /**
-     * Set fields for queries.
-     *
-     * @param array $columns
-     * @param bool  $merge
-     *
-     * @return $this
-     */
-    public function setFields(array $columns, $merge = true)
-    {
-        if ($merge) {
-            $this->columns = array_merge($this->columns, $columns);
-        } else {
-            $this->columns = $columns;
-        }
-
-        return $this;
-    }
-
-    /**
      * Create an instance of repository's model.
      *
      * @throws \Znck\Repositories\Exceptions\RepositoryException
@@ -158,14 +125,35 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     abstract public function model();
 
     /**
+     * Set fields for queries.
+     *
+     * @param array $columns
+     * @param bool $merge
+     *
+     * @return $this
+     */
+    public function setFields(array $columns, $merge = true)
+    {
+        if ($merge) {
+            $this->columns = array_merge($this->columns, $columns);
+        } else {
+            $this->columns = $columns;
+        }
+
+        return $this;
+    }
+
+    /**
      * Get all results.
      *
-     * @param array|null $columns
+     * @param array $columns
      *
      * @return mixed
      */
-    public function all($columns = [])
+    public function all(array $columns = [])
     {
+        $columns = array_merge($this->columns, $columns);
+
         return $this->model->get($columns);
     }
 
@@ -173,12 +161,14 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      * Get result with matching id.
      *
      * @param string|int $id
-     * @param array|null $columns
+     * @param array $columns
      *
      * @return mixed
      */
-    public function find($id, $columns = ['*'])
+    public function find($id, array $columns = [])
     {
+        $columns = array_merge($this->columns, $columns);
+
         return $this->model->find($id, $columns);
     }
 
@@ -186,16 +176,62 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      * Get all results with the field-value constraint.
      *
      * @param string $field
-     * @param mixed  $value
-     * @param array  $columns
+     * @param mixed $value
+     * @param array $columns
      *
      * @return mixed
      */
-    public function findBy($field, $value, $columns = [])
+    public function findBy($field, $value, array $columns = [])
     {
-        $this->applyCriteria();
+        $columns = array_merge($this->columns, $columns);
 
         return $this->model->where($field, '=', $value)->first($columns);
+    }
+
+    /**
+     * Get all results paginated.
+     *
+     * @param int $perPage
+     * @param array $columns
+     *
+     * @return mixed
+     */
+    public function paginate($perPage = 15, array $columns = [])
+    {
+        $columns = array_merge($this->columns, $columns);
+
+        return $this->model->paginate($perPage, $columns);
+    }
+
+    /**
+     * Get all results with given constraints.
+     *
+     * @param array $condition
+     * @param array $columns
+     *
+     * @return mixed
+     */
+    public function where(array $condition, array $columns = [])
+    {
+        $columns = array_merge($this->columns, $columns);
+        $count = count($condition);
+
+        if ($count < 2) {
+            return $this->model->get($columns);
+        }
+
+        $third = null;
+        $fourth = 'and';
+        if (count($condition) == 4) {
+            list($first, $second, $third, $fourth) = $condition;
+        } elseif ($count == 3) {
+            list($first, $second, $third) = $condition;
+        } else {
+            list($first, $second) = $condition;
+        }
+
+
+        return $this->model->where($first, $second, $third, $fourth)->get($columns);
     }
 
     /**
@@ -214,6 +250,20 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
                 $this->model = $criteria->apply($this->model, $this);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Set whether to use criteria or not.
+     *
+     * @param bool $status
+     *
+     * @return $this
+     */
+    public function skipCriteria($status = true)
+    {
+        $this->skipCriteria = $status;
 
         return $this;
     }
@@ -254,47 +304,5 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
         $this->model = $criteria->apply($this->model, $this);
 
         return $this;
-    }
-
-    /**
-     * Get all results paginated.
-     *
-     * @param int        $perPage
-     * @param array|null $columns
-     *
-     * @return mixed
-     */
-    public function paginate($perPage = 15, $columns = [])
-    {
-        $this->applyCriteria();
-
-        return $this->model->paginate($perPage, $columns);
-    }
-
-    /**
-     * Get all results with given constraints.
-     *
-     * @param array $condition
-     * @param array $columns
-     *
-     * @return mixed
-     */
-    public function where(array $condition, $columns = [])
-    {
-        $this->applyCriteria();
-        $count = count($condition);
-        assert($count > 1);
-
-        $third = null;
-        $fourth = 'and';
-        if (count($condition) == 4) {
-            list($first, $second, $third, $fourth) = $condition;
-        } elseif ($count == 3) {
-            list($first, $second, $third) = $condition;
-        } else {
-            list($first, $second) = $condition;
-        }
-
-        return $this->model->where($first, $second, $third, $fourth)->get($columns);
     }
 }
