@@ -1,49 +1,65 @@
-<?php namespace Znck\Repositories\Contracts;
+<?php
 
-/**
- * Interface RepositoryInterface
- *
- * @package Znck\Repositories\Contracts
- */
+namespace Znck\Repositories\Contracts;
+
 interface RepositoryInterface
 {
-    /**
-     * @param array $columns
-     *
-     * @return mixed
-     */
-    public function all($columns = ['*']);
 
     /**
-     * @param int   $perPage
-     * @param array $columns
+     * Set fields for queries.
      *
-     * @return mixed
+     * @param  array  $columns
+     * @param  bool  $merge
+     * @return $this
      */
-    public function paginate($perPage = 15, $columns = ['*']);
+    public function setFields(array $columns, $merge = true);
 
     /**
-     * @param       $id
-     * @param array $columns
+     * Get all results.
      *
+     * @param  array|null  $columns
      * @return mixed
      */
-    public function find($id, $columns = ['*']);
+    public function all($columns = []);
+
 
     /**
-     * @param       $field
-     * @param       $value
-     * @param array $columns
+     * Get all results paginated.
      *
+     * @param  int  $perPage
+     * @param  array|null  $columns
      * @return mixed
      */
-    public function findBy($field, $value, $columns = ['*']);
+    public function paginate($perPage = 50, $columns = []);
+
 
     /**
-     * @param array $condition
-     * @param array $columns
+     * Get result with matching id.
      *
+     * @param  string|int  $id
+     * @param  array|null  $columns
      * @return mixed
      */
-    public function where(array $condition, $columns = ['*']);
+    public function find($id, $columns = []);
+
+
+    /**
+     * Get all results with the field-value constraint.
+     *
+     * @param  string  $field
+     * @param  mixed  $value
+     * @param  array  $columns
+     * @return  mixed
+     */
+    public function findBy($field, $value, $columns = []);
+
+
+    /**
+     * Get all results with given constraints.
+     *
+     * @param  array  $condition
+     * @param  array  $columns
+     * @return mixed
+     */
+    public function where(array $condition, $columns = []);
 }
