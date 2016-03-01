@@ -1,6 +1,4 @@
-<?php
-
-namespace Znck\Repositories;
+<?php namespace Znck\Repositories;
 
 use Illuminate\Container\Container as App;
 use Illuminate\Database\Eloquent\Model;
@@ -67,7 +65,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      *
      * @return $this
      */
-    public function resetScope()
+    protected function resetScope()
     {
         $this->skipCriteria(false);
         $this->setFields(['*'], false);
@@ -82,11 +80,11 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function refreshModel()
+    protected function refreshModel()
     {
-        $model = $this->makeModel();
+        $this->model = $this->makeModel()->newQuery();
 
-        return $this->model = $model->newQuery();
+        return $this;
     }
 
     /**
@@ -110,8 +108,8 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     {
         $model = $this->app->make($this->model());
 
-        if (!$model instanceof Model) {
-            throw new RepositoryException('Class '.$this->model().' must be an instance of Illuminate\\Database\\Eloquent\\Model');
+        if (! $model instanceof Model) {
+            throw new RepositoryException($this->model());
         }
 
         return $model;
@@ -122,7 +120,21 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      *
      * @return string
      */
-    abstract public function model();
+    abstract protected function model();
+
+    /**
+     * Set whether to use criteria or not.
+     *
+     * @param bool $status
+     *
+     * @return $this
+     */
+    public function skipCriteria($status = true)
+    {
+        $this->skipCriteria = $status;
+
+        return $this;
+    }
 
     /**
      * Set fields for queries.
@@ -196,7 +208,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      *
      * @return mixed
      */
-    public function paginate($perPage = 15, array $columns = [])
+    public function paginate($perPage = 20, array $columns = [])
     {
         $columns = array_merge($this->columns, $columns);
 
@@ -254,20 +266,6 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     }
 
     /**
-     * Set whether to use criteria or not.
-     *
-     * @param bool $status
-     *
-     * @return $this
-     */
-    public function skipCriteria($status = true)
-    {
-        $this->skipCriteria = $status;
-
-        return $this;
-    }
-
-    /**
      * Collection of criterion on the repository.
      *
      * @return \Illuminate\Support\Collection|array
@@ -280,13 +278,13 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Push a criterion on the repository's criteria list.
      *
-     * @param \Znck\Repositories\Contracts\CriteriaInterface $criteria
+     * @param \Znck\Repositories\Contracts\CriteriaInterface $criterion
      *
      * @return $this
      */
-    public function pushCriteria(CriteriaInterface $criteria)
+    public function pushCriteria(CriteriaInterface $criterion)
     {
-        $this->criteria->push($criteria);
+        $this->criteria->push($criterion);
 
         return $this;
     }
@@ -294,13 +292,13 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Apply a criterion without pushing it.
      *
-     * @param \Znck\Repositories\Contracts\CriteriaInterface $criteria
+     * @param \Znck\Repositories\Contracts\CriteriaInterface $criterion
      *
      * @return $this
      */
-    public function getByCriteria(CriteriaInterface $criteria)
+    public function getByCriteria(CriteriaInterface $criterion)
     {
-        $this->model = $criteria->apply($this->model, $this);
+        $this->model = $criterion->apply($this->model, $this);
 
         return $this;
     }

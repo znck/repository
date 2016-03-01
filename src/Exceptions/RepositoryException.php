@@ -1,12 +1,12 @@
-<?php
+<?php namespace Znck\Repositories\Exceptions;
 
-namespace Znck\Repositories\Exceptions;
+use Exception;
+use Illuminate\Database\Eloquent\Model;
 
-/**
- * This file belongs to znck/repositories.
- * Author: Rahul Kadyan, <hi@znck.me>
- * Find license in root directory of this project.
- */
-class RepositoryException extends \Exception
+class RepositoryException extends Exception
 {
+    public function __construct($class, $code = 0, Exception $previous = null)
+    {
+        parent::__construct("{$class} must be an instance of ".Model::class, $code, $previous);
+    }
 }

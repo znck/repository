@@ -1,0 +1,14 @@
+<?php namespace DummyNamespace;
+
+use Znck\Repositories\Repository;
+
+class DummyClass extends Repository
+{
+    protected function model() {
+        // return {Model Class Name};
+    }
+
+    protected function boot () {
+        // Boot up - Add a criteria or something else.
+    }
+}

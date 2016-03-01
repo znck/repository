@@ -23,20 +23,20 @@ interface RepositoryCriteriaInterface
     /**
      * Apply criterion without pushing on the repository's criteria list.
      *
-     * @param \Znck\Repositories\Contracts\CriteriaInterface $criteria
+     * @param \Znck\Repositories\Contracts\CriteriaInterface $criterion
      *
      * @return $this
      */
-    public function getByCriteria(CriteriaInterface $criteria);
+    public function getByCriteria(CriteriaInterface $criterion);
 
     /**
      * Push a criterion on the repository's criteria list.
      *
-     * @param \Znck\Repositories\Contracts\CriteriaInterface $criteria
+     * @param \Znck\Repositories\Contracts\CriteriaInterface $criterion
      *
      * @return $this
      */
-    public function pushCriteria(CriteriaInterface $criteria);
+    public function pushCriteria(CriteriaInterface $criterion);
 
     /**
      * Apply all criteria.

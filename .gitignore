@@ -1,3 +1,5 @@
+.php_cs.cache
+
 # Created by https://www.gitignore.io/api/phpstorm,osx,composer
 
 ### PhpStorm ###
@@ -55,7 +57,8 @@ crashlytics-build.properties
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*

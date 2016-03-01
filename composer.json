@@ -25,12 +25,13 @@
       "email": "hi@znck.me"
     }
   ],
-  "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
     "php": ">=5.4.0",
     "illuminate/support": "5.*",
-    "illuminate/database": "5.*"
+    "illuminate/database": "5.*",
+    "illuminate/http": "^5.2",
+    "illuminate/console": "^5.2"
   },
   "require-dev": {
   }
