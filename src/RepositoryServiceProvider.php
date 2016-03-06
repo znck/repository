@@ -1,10 +1,15 @@
 <?php namespace Znck\Repositories;
 
 use Illuminate\Support\ServiceProvider;
-use Znck\Repositories\Console\MakeRepositoryCommand;
+use Znck\Repositories\Console\RepositoryMakeCommand;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
     protected $defer = true;
 
     /**
@@ -14,6 +19,12 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->commands([MakeRepositoryCommand::class]);
+        $this->app->singleton('command.make.repository', RepositoryMakeCommand::class);
+        $this->commands('command.make.repository');
+    }
+
+    public function provides()
+    {
+        return ['command.make.repository'];
     }
 }
