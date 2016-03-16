@@ -11,7 +11,7 @@ use Znck\Repositories\Contracts\RepositoryQueryInterface;
 use Znck\Repositories\Contracts\RepositoryUpdateInterface;
 use Znck\Repositories\Exceptions\RepositoryException;
 
-abstract class RepositoryQuery implements RepositoryQueryInterface, RepositoryCriteriaInterface, RepositoryCreateInterface, RepositoryUpdateInterface, RepositoryDeleteInterface
+abstract class Repository implements RepositoryQueryInterface, RepositoryCriteriaInterface, RepositoryCreateInterface, RepositoryUpdateInterface, RepositoryDeleteInterface
 {
     /**
      * Instance of laravel App.
@@ -103,7 +103,7 @@ abstract class RepositoryQuery implements RepositoryQueryInterface, RepositoryCr
     {
         $model = $this->app->make($this->model());
 
-        if (!$model instanceof Model) {
+        if (! $model instanceof Model) {
             throw new RepositoryException($this->model());
         }
 
@@ -253,7 +253,6 @@ abstract class RepositoryQuery implements RepositoryQueryInterface, RepositoryCr
      */
     public function where(array $condition)
     {
-
         $this->applyCriteria();
 
         $count = count($condition);

@@ -2,10 +2,9 @@
 
 /**
  * Interface RepositoryInterface
- * @package Znck\Repositories\Contracts
+ *
  * @deprecated
  */
 interface RepositoryInterface extends RepositoryQueryInterface
 {
-
 }

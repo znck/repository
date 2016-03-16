@@ -6,6 +6,7 @@ interface RepositoryDeleteInterface
      * Delete resource.
      *
      * @param string|int|\Illuminate\Database\Eloquent\Model $id
+     *
      * @return bool
      */
     public function delete($id);

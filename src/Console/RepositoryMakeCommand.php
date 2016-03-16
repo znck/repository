@@ -33,17 +33,18 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return dirname(dirname(__DIR__)) . '/resources/stubs/repository.stub';
+        return dirname(dirname(__DIR__)).'/resources/stubs/repository.stub';
     }
 
     /**
      * Get the default namespace for the class.
      *
      * @param  string  $rootNamespace
+     *
      * @return string
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace . '\\Repositories';
+        return $rootNamespace.'\\Repositories';
     }
 }
