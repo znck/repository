@@ -34,5 +34,6 @@
     "illuminate/console": "^5.2"
   },
   "require-dev": {
+    "phpunit/phpunit": "^5.2"
   }
 }

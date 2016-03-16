@@ -37,11 +37,4 @@ interface RepositoryCriteriaInterface
      * @return $this
      */
     public function pushCriteria(CriteriaInterface $criterion);
-
-    /**
-     * Apply all criteria.
-     *
-     * @return $this
-     */
-    public function applyCriteria();
 }

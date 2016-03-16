@@ -4,11 +4,14 @@ use Illuminate\Container\Container as App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Znck\Repositories\Contracts\CriteriaInterface;
+use Znck\Repositories\Contracts\RepositoryCreateInterface;
 use Znck\Repositories\Contracts\RepositoryCriteriaInterface;
-use Znck\Repositories\Contracts\RepositoryInterface;
+use Znck\Repositories\Contracts\RepositoryDeleteInterface;
+use Znck\Repositories\Contracts\RepositoryQueryInterface;
+use Znck\Repositories\Contracts\RepositoryUpdateInterface;
 use Znck\Repositories\Exceptions\RepositoryException;
 
-abstract class Repository implements RepositoryInterface, RepositoryCriteriaInterface
+abstract class RepositoryQuery implements RepositoryQueryInterface, RepositoryCriteriaInterface, RepositoryCreateInterface, RepositoryUpdateInterface, RepositoryDeleteInterface
 {
     /**
      * Instance of laravel App.
@@ -16,13 +19,6 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
      * @var App
      */
     protected $app;
-
-    /**
-     * Select columns for query.
-     *
-     * @var array
-     */
-    protected $columns = ['*'];
 
     /**
      * Collection of criterion.
@@ -34,7 +30,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     /**
      * Instance of the model.
      *
-     * @var \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
+     * @var \Illuminate\Database\Eloquent\Builder
      */
     protected $model;
 
@@ -68,7 +64,6 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     protected function resetScope()
     {
         $this->skipCriteria(false);
-        $this->setFields(['*'], false);
 
         return $this;
     }
@@ -108,7 +103,7 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
     {
         $model = $this->app->make($this->model());
 
-        if (! $model instanceof Model) {
+        if (!$model instanceof Model) {
             throw new RepositoryException($this->model());
         }
 
@@ -134,115 +129,6 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
         $this->skipCriteria = $status;
 
         return $this;
-    }
-
-    /**
-     * Set fields for queries.
-     *
-     * @param array $columns
-     * @param bool $merge
-     *
-     * @return $this
-     */
-    public function setFields(array $columns, $merge = true)
-    {
-        if ($merge) {
-            $this->columns = array_merge($this->columns, $columns);
-        } else {
-            $this->columns = $columns;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get all results.
-     *
-     * @param array $columns
-     *
-     * @return mixed
-     */
-    public function all(array $columns = [])
-    {
-        $columns = array_merge($this->columns, $columns);
-
-        return $this->model->get($columns);
-    }
-
-    /**
-     * Get result with matching id.
-     *
-     * @param string|int $id
-     * @param array $columns
-     *
-     * @return mixed
-     */
-    public function find($id, array $columns = [])
-    {
-        $columns = array_merge($this->columns, $columns);
-
-        return $this->model->find($id, $columns);
-    }
-
-    /**
-     * Get all results with the field-value constraint.
-     *
-     * @param string $field
-     * @param mixed $value
-     * @param array $columns
-     *
-     * @return mixed
-     */
-    public function findBy($field, $value, array $columns = [])
-    {
-        $columns = array_merge($this->columns, $columns);
-
-        return $this->model->where($field, '=', $value)->first($columns);
-    }
-
-    /**
-     * Get all results paginated.
-     *
-     * @param int $perPage
-     * @param array $columns
-     *
-     * @return mixed
-     */
-    public function paginate($perPage = 20, array $columns = [])
-    {
-        $columns = array_merge($this->columns, $columns);
-
-        return $this->model->paginate($perPage, $columns);
-    }
-
-    /**
-     * Get all results with given constraints.
-     *
-     * @param array $condition
-     * @param array $columns
-     *
-     * @return mixed
-     */
-    public function where(array $condition, array $columns = [])
-    {
-        $columns = array_merge($this->columns, $columns);
-        $count = count($condition);
-
-        if ($count < 2) {
-            return $this->model->get($columns);
-        }
-
-        $third = null;
-        $fourth = 'and';
-        if (count($condition) == 4) {
-            list($first, $second, $third, $fourth) = $condition;
-        } elseif ($count == 3) {
-            list($first, $second, $third) = $condition;
-        } else {
-            list($first, $second) = $condition;
-        }
-
-        return $this->model->where($first, $second, $third, $fourth)->get($columns);
     }
 
     /**
@@ -301,5 +187,91 @@ abstract class Repository implements RepositoryInterface, RepositoryCriteriaInte
         $this->model = $criterion->apply($this->model, $this);
 
         return $this;
+    }
+
+    /**
+     * Get all results.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function all()
+    {
+        $this->applyCriteria();
+
+        return $this->model->get();
+    }
+
+    /**
+     * Get result with matching id.
+     *
+     * @param string|int $id
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function find($id)
+    {
+        $this->applyCriteria();
+
+        return $this->model->find($id);
+    }
+
+    /**
+     * Get all results with the field-value constraint.
+     *
+     * @param string $field
+     * @param mixed $value
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function findBy($field, $value)
+    {
+        $this->applyCriteria();
+
+        return $this->model->where($field, '=', $value)->first();
+    }
+
+    /**
+     * Get all results paginated.
+     *
+     * @param int $perPage
+     *
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function paginate(int $perPage = 20)
+    {
+        $this->applyCriteria();
+
+        return $this->model->paginate($perPage);
+    }
+
+    /**
+     * Get all results with given constraints.
+     *
+     * @param array $condition
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function where(array $condition)
+    {
+
+        $this->applyCriteria();
+
+        $count = count($condition);
+
+        if ($count < 2) {
+            throw new \InvalidArgumentException();
+        }
+
+        $third = null;
+        $fourth = 'and';
+        if (count($condition) == 4) {
+            list($first, $second, $third, $fourth) = $condition;
+        } elseif ($count == 3) {
+            list($first, $second, $third) = $condition;
+        } else {
+            list($first, $second) = $condition;
+        }
+
+        return $this->model->where($first, $second, $third, $fourth)->get();
     }
 }
