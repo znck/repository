@@ -40,7 +40,7 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
      * Create instance of a repository.
      *
      * @param \Illuminate\Container\Container $app
-     * @param \Illuminate\Support\Collection $collection
+     * @param \Illuminate\Support\Collection  $collection
      */
     public function __construct(App $app, Collection $collection)
     {

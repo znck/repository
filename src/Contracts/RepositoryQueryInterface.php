@@ -19,7 +19,7 @@ interface RepositoryQueryInterface
     /**
      * Get all results paginated.
      *
-     * @param int        $perPage
+     * @param int $perPage
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */

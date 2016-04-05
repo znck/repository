@@ -1,7 +1,6 @@
 <?php namespace Znck\Repositories\Console;
 
 use Illuminate\Console\GeneratorCommand;
-use Symfony\Component\Console\Input\InputArgument;
 
 class RepositoryMakeCommand extends GeneratorCommand
 {
@@ -39,7 +38,7 @@ class RepositoryMakeCommand extends GeneratorCommand
     /**
      * Get the default namespace for the class.
      *
-     * @param  string  $rootNamespace
+     * @param string $rootNamespace
      *
      * @return string
      */

@@ -20,6 +20,7 @@ trait RepositoryQueryTrait
    public function enableHttpMode()
    {
        $this->throwError = true;
+
        return $this;
    }
 
@@ -31,6 +32,7 @@ trait RepositoryQueryTrait
    public function disableHttpMode()
    {
        $this->throwError = false;
+
        return $this;
    }
 
