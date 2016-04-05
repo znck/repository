@@ -10,9 +10,7 @@ class DummyClass extends Repository
      *
      * @return string
      */
-    protected function model() {
-        // return {Model Class Name};
-    }
+    protected $modelClass /* = \App\User::class */ ;
 
     /**
      * Booting repository.

@@ -3,29 +3,24 @@
 use Illuminate\Container\Container as App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Znck\Repositories\Contracts\CriteriaInterface;
 use Znck\Repositories\Contracts\RepositoryCreateInterface;
 use Znck\Repositories\Contracts\RepositoryCriteriaInterface;
 use Znck\Repositories\Contracts\RepositoryDeleteInterface;
 use Znck\Repositories\Contracts\RepositoryQueryInterface;
 use Znck\Repositories\Contracts\RepositoryUpdateInterface;
 use Znck\Repositories\Exceptions\RepositoryException;
+use Znck\Repositories\Traits\RepositoryCriteriaTrait;
+use Znck\Repositories\Traits\RepositoryQueryTrait;
 
 abstract class Repository implements RepositoryQueryInterface, RepositoryCriteriaInterface, RepositoryCreateInterface, RepositoryUpdateInterface, RepositoryDeleteInterface
 {
+    use RepositoryCriteriaTrait, RepositoryQueryTrait;
     /**
      * Instance of laravel App.
      *
      * @var App
      */
     protected $app;
-
-    /**
-     * Collection of criterion.
-     *
-     * @var \Illuminate\Support\Collection
-     */
-    protected $criteria;
 
     /**
      * Instance of the model.
@@ -35,11 +30,11 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
     protected $model;
 
     /**
-     * Controls whether to use criteria or not.
+     * Class name of the Eloquent model.
      *
-     * @var bool
+     * @var string
      */
-    protected $skipCriteria;
+    protected $modelClass;
 
     /**
      * Create instance of a repository.
@@ -54,6 +49,17 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
         $this->resetScope();
         $this->refresh();
         $this->boot();
+    }
+
+    /**
+     * Create a new instance of repository.
+     *
+     * @return $this
+     * @codeCoverageIgnore
+     */
+    public function self()
+    {
+        return $this->app->make(static::class);
     }
 
     /**
@@ -89,7 +95,12 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
      */
     protected function boot()
     {
-        // Extend it in child.
+        $class = static::class;
+        foreach (class_uses_recursive($class) as $trait) {
+            if (method_exists($class, $method = 'boot'.class_basename($trait))) {
+                call_user_func([$this, $method]);
+            }
+        }
     }
 
     /**
@@ -101,176 +112,25 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
      */
     protected function makeModel()
     {
-        $model = $this->app->make($this->model());
+        $model = $this->app->make($this->getModelClass());
 
         if (! $model instanceof Model) {
-            throw new RepositoryException($this->model());
+            throw new RepositoryException($this->getModelClass());
         }
 
         return $model;
     }
 
-    /**
-     * Class name of the Eloquent model.
-     *
-     * @return string
-     */
-    abstract protected function model();
-
-    /**
-     * Set whether to use criteria or not.
-     *
-     * @param bool $status
-     *
-     * @return $this
-     */
-    public function skipCriteria($status = true)
+    protected function getModelClass()
     {
-        $this->skipCriteria = $status;
-
-        return $this;
-    }
-
-    /**
-     * Apply all criteria.
-     *
-     * @return $this
-     */
-    public function applyCriteria()
-    {
-        if ($this->skipCriteria === true) {
-            return $this;
+        if ($this->modelClass) {
+            return $this->modelClass;
+        }
+        // Backward compatible.
+        if (method_exists($this, 'model')) {
+            return $this->model();
         }
 
-        foreach ($this->getCriteria() as $criteria) {
-            if ($criteria instanceof CriteriaInterface) {
-                $this->model = $criteria->apply($this->model, $this);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Collection of criterion on the repository.
-     *
-     * @return \Illuminate\Support\Collection|array
-     */
-    public function getCriteria()
-    {
-        return $this->criteria;
-    }
-
-    /**
-     * Push a criterion on the repository's criteria list.
-     *
-     * @param \Znck\Repositories\Contracts\CriteriaInterface $criterion
-     *
-     * @return $this
-     */
-    public function pushCriteria(CriteriaInterface $criterion)
-    {
-        $this->criteria->push($criterion);
-
-        return $this;
-    }
-
-    /**
-     * Apply a criterion without pushing it.
-     *
-     * @param \Znck\Repositories\Contracts\CriteriaInterface $criterion
-     *
-     * @return $this
-     */
-    public function getByCriteria(CriteriaInterface $criterion)
-    {
-        $this->model = $criterion->apply($this->model, $this);
-
-        return $this;
-    }
-
-    /**
-     * Get all results.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function all()
-    {
-        $this->applyCriteria();
-
-        return $this->model->get();
-    }
-
-    /**
-     * Get result with matching id.
-     *
-     * @param string|int $id
-     *
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function find($id)
-    {
-        $this->applyCriteria();
-
-        return $this->model->find($id);
-    }
-
-    /**
-     * Get all results with the field-value constraint.
-     *
-     * @param string $field
-     * @param mixed $value
-     *
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function findBy($field, $value)
-    {
-        $this->applyCriteria();
-
-        return $this->model->where($field, '=', $value)->first();
-    }
-
-    /**
-     * Get all results paginated.
-     *
-     * @param int $perPage
-     *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public function paginate(int $perPage = 20)
-    {
-        $this->applyCriteria();
-
-        return $this->model->paginate($perPage);
-    }
-
-    /**
-     * Get all results with given constraints.
-     *
-     * @param array $condition
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function where(array $condition)
-    {
-        $this->applyCriteria();
-
-        $count = count($condition);
-
-        if ($count < 2) {
-            throw new \InvalidArgumentException();
-        }
-
-        $third = null;
-        $fourth = 'and';
-        if (count($condition) == 4) {
-            list($first, $second, $third, $fourth) = $condition;
-        } elseif ($count == 3) {
-            list($first, $second, $third) = $condition;
-        } else {
-            list($first, $second) = $condition;
-        }
-
-        return $this->model->where($first, $second, $third, $fourth)->get();
+        throw new RepositoryException('$modelClass property not defined on '.get_class($this));
     }
 }

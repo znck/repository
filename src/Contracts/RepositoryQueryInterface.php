@@ -9,6 +9,13 @@ interface RepositoryQueryInterface
      */
     public function all();
 
+     /**
+      * Get number of results.
+      *
+      * @return int
+      */
+     public function count();
+
     /**
      * Get all results paginated.
      *
