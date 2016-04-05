@@ -98,7 +98,6 @@ Once `Repository` is installed, you have to register its service provider. Open 
     }
   }
   ```
-- TODO: Add wiki.
 
 ## Change log
 
