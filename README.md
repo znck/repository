@@ -49,7 +49,7 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "znck/repository": "^2.2"
+        "znck/repository": "^0.2"
     }
 }
 ```
