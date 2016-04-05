@@ -1,6 +1,6 @@
 Repository
 ==========
-Don't use your [Eloquent model]() directly into your controllers. Instead create a repository and inject it, so your controllers can be tested better.
+Don't use your Eloquent models directly into your controllers, instead create a repository.
 
 ![Repository](cover.png)
 
