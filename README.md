@@ -32,6 +32,7 @@ Don't use your Eloquent models directly into your controllers, instead create a 
 > ## Development Milestones
 - [x] Build a robust framework for repository implementation.
 - [x] Build a strong test suite.
+- [ ] Create documentation/wiki.
 - [ ] Build a collection of common criterion.
 
 ## Installation
