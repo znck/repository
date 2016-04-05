@@ -36,7 +36,7 @@ Don't use your Eloquent models directly into your controllers, instead create a 
 
 ## Installation
 
-Either [PHP](https://php.net) 7.0+ is required.
+[PHP](https://php.net) 7.0+ is required.
 
 To get the latest version of Repository, simply require the project using [Composer](https://getcomposer.org):
 
@@ -68,9 +68,36 @@ Once `Repository` is installed, you have to register its service provider. Open 
 ```
 
 ## Usage
-> TODO: Add usage docs.
-
 `Repository` provides command (`php artisan make:repository`) to create a new repository class.
+
+- Create a new repository
+  ```bash
+  $ php artisan make:repository UserRepository
+  ```
+- Add logic for `create`, `update` and `delete` method in `app/Repositories/UserRepository.php` file.
+- Now you can inject this repository in your controllers.
+  ```php
+  ...
+  class UserController extends Controller {
+    public function register(UserRepository $repository, Request $request) {
+      $user = $repository->create($request->all());
+      if (!$user) {
+        // Throw validation error or something.
+      }
+      return response('', 202);
+    }
+    
+    public function index(UserRepository $repository) {
+      return $repository->all();
+      // return $repository->paginate(20);
+    }
+    
+    public function show(UserRepository $repository, $id) {
+      return $repository->enableHttpMode()->find($id); // This will throw 404 exception if not found.
+    }
+  }
+  ```
+- TODO: Add wiki.
 
 ## Change log
 
