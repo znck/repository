@@ -69,12 +69,9 @@ Once `Repository` is installed, you have to register its service provider. Open 
 ```
 
 ## Usage
-`Repository` provides command (`php artisan make:repository`) to create a new repository class.
-
-- Create a new repository
-  ```bash
-  $ php artisan make:repository UserRepository
-  ```
+See [docs](https://github.com/znck/repository/wiki) for detailed explaintaion.
+- Create a new repository  
+  `php artisan make:repository UserRepository`
 - Add logic for `create`, `update` and `delete` method in `app/Repositories/UserRepository.php` file.
 - Now you can inject this repository in your controllers.
   ```php
