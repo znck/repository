@@ -1,6 +1,6 @@
 <?php namespace Znck\Repositories\Traits;
 
-use \Znck\Repositories\Contracts\CriteriaInterface;
+use Znck\Repositories\Contracts\CriteriaInterface;
 
 trait RepositoryCriteriaTrait
 {
@@ -11,14 +11,13 @@ trait RepositoryCriteriaTrait
    */
   protected $criteria;
 
-
   /**
    * Controls whether to use criteria or not.
    *
    * @var bool
    */
   protected $skipCriteria;
-  
+
   /**
    * Set whether to use criteria or not.
    *

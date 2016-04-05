@@ -1,7 +1,7 @@
 <?php namespace Znck\Repositories\Contracts;
 
 /**
- * Interface RepositoryInterface
+ * Interface RepositoryInterface.
  *
  * @deprecated
  */

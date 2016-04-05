@@ -37,6 +37,7 @@ class RepositoryTest extends AbstractTestCase
         $mocked->method('where')->willReturn($mocked);
         $mocked->method('paginate')->willReturn(null);
         $mocked->method('first')->willReturn(null);
+
         return $mocked;
     }
 
@@ -64,7 +65,7 @@ class RepositoryTest extends AbstractTestCase
     {
         if (! $this->app) {
             $this->app = new Container();
-            $this->app->singleton(DummyModelForMocking::class, function () {return $this->makeModel();});
+            $this->app->singleton(DummyModelForMocking::class, function () {return $this->makeModel(); });
         }
         $mocked = $this
           ->getMockBuilder(DummyRepositoryForMocking::class)
@@ -210,12 +211,15 @@ class DummyModelForMocking extends Model
 class DummyRepositoryWithWrongModel extends Repository
 {
     protected $modelClass = DummyInvalidModel::class;
+
     public function create(array $attributes)
     {
     }
+
     public function delete($id)
     {
     }
+
     public function update(array $attributes, $id)
     {
     }
@@ -225,9 +229,11 @@ class DummyRepositoryWithoutModel extends Repository
     public function create(array $attributes)
     {
     }
+
     public function delete($id)
     {
     }
+
     public function update(array $attributes, $id)
     {
     }
@@ -238,12 +244,15 @@ class DummyRepositoryWithModelFunction extends Repository
     {
         return DummyModelForMocking::class;
     }
+
     public function create(array $attributes)
     {
     }
+
     public function delete($id)
     {
     }
+
     public function update(array $attributes, $id)
     {
     }
@@ -251,12 +260,15 @@ class DummyRepositoryWithModelFunction extends Repository
 class DummyRepositoryForMocking extends Repository
 {
     protected $modelClass = DummyModelForMocking::class;
+
     public function create(array $attributes)
     {
     }
+
     public function delete($id)
     {
     }
+
     public function update(array $attributes, $id)
     {
     }
