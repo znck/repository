@@ -196,9 +196,9 @@ class RepositoryTest extends AbstractTestCase
 
 class DummyCriteriaForMocking implements CriteriaInterface
 {
-    public function apply($model, RepositoryQueryInterface $repository)
+    public function apply($query, RepositoryQueryInterface $repository)
     {
-        return $model;
+        return $query;
     }
 }
 class DummyInvalidModel
@@ -209,7 +209,7 @@ class DummyModelForMocking extends Model
 }
 class DummyRepositoryWithWrongModel extends Repository
 {
-    protected $modelClass = DummyInvalidModel::class;
+    protected $model = DummyInvalidModel::class;
     public function create(array $attributes)
     {
     }
@@ -250,7 +250,7 @@ class DummyRepositoryWithModelFunction extends Repository
 }
 class DummyRepositoryForMocking extends Repository
 {
-    protected $modelClass = DummyModelForMocking::class;
+    protected $model = DummyModelForMocking::class;
     public function create(array $attributes)
     {
     }

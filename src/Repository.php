@@ -25,16 +25,21 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
     /**
      * Instance of the model.
      *
-     * @var \Illuminate\Database\Eloquent\Builder
+     * @var \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
-    protected $model;
+    protected $query;
 
     /**
      * Class name of the Eloquent model.
      *
      * @var string
      */
-    protected $modelClass;
+    protected $model;
+
+    /**
+     * @var \Illuminate\Database\Eloquent\Model
+     */
+    private $instance;
 
     /**
      * Create instance of a repository.
@@ -83,7 +88,7 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
      */
     protected function refresh()
     {
-        $this->model = $this->makeModel()->newQuery();
+        $this->query = $this->getModel()->newQuery();
 
         return $this;
     }
@@ -110,22 +115,27 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
-    protected function makeModel()
+    protected function getModel()
     {
-        $model = $this->app->make($this->getModelClass());
+        if (! $this->instance) {
+            $model = $this->app->make($this->getModelClass());
 
-        if (! $model instanceof Model) {
-            throw new RepositoryException($this->getModelClass());
+            if (! $model instanceof Model) {
+                throw new RepositoryException($this->getModelClass());
+            }
+
+            $this->instance = $model;
         }
 
-        return $model;
+        return $this->instance;
     }
 
-    protected function getModelClass()
+    private function getModelClass()
     {
-        if ($this->modelClass) {
-            return $this->modelClass;
+        if ($this->model) {
+            return $this->model;
         }
+
         // Backward compatible.
         if (method_exists($this, 'model')) {
             return $this->model();
