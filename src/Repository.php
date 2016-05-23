@@ -141,6 +141,6 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
             return $this->model();
         }
 
-        throw new RepositoryException('$modelClass property not defined on '.get_class($this));
+        throw new RepositoryException('$model property not defined on '.get_class($this));
     }
 }
