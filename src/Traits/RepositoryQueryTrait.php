@@ -45,7 +45,7 @@ trait RepositoryQueryTrait
   {
       $this->applyCriteria();
 
-      return $this->model->get();
+      return $this->query->get();
   }
 
    /**
@@ -57,7 +57,7 @@ trait RepositoryQueryTrait
    {
        $this->applyCriteria();
 
-       return $this->model->count();
+       return $this->query->count();
    }
 
   /**
@@ -71,7 +71,8 @@ trait RepositoryQueryTrait
   {
       $this->applyCriteria();
 
-      $item = $this->model->find($id);
+      $item = $this->query->find($id);
+
       if ($this->throwError and ! $item) {
           throw new NotFoundHttpException();
       }
@@ -91,7 +92,7 @@ trait RepositoryQueryTrait
   {
       $this->applyCriteria();
 
-      $item = $this->model->where($field, '=', $value)->first();
+      $item = $this->query->where($field, '=', $value)->first();
       if ($this->throwError and ! $item) {
           throw new NotFoundHttpException();
       }
@@ -110,7 +111,7 @@ trait RepositoryQueryTrait
   {
       $this->applyCriteria();
 
-      return $this->model->paginate($perPage);
+      return $this->query->paginate($perPage);
   }
 
   /**
@@ -137,6 +138,6 @@ trait RepositoryQueryTrait
           throw new InvalidArgumentException();
       }
 
-      return $this->model->where($first, $second, $third, $fourth)->get();
+      return $this->query->where($first, $second, $third, $fourth)->get();
   }
 }

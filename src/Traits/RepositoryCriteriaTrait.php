@@ -45,7 +45,7 @@ trait RepositoryCriteriaTrait
 
       foreach ($this->getCriteria() as $criteria) {
           if ($criteria instanceof CriteriaInterface) {
-              $this->model = $criteria->apply($this->model, $this);
+              $this->query = $criteria->apply($this->query, $this);
           }
       }
 
@@ -85,7 +85,7 @@ trait RepositoryCriteriaTrait
    */
   public function getByCriteria(CriteriaInterface $criterion)
   {
-      $this->model = $criterion->apply($this->model, $this);
+      $this->query = $criterion->apply($this->query, $this);
 
       return $this;
   }
