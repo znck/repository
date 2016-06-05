@@ -31,7 +31,8 @@
     "illuminate/support": "^5.2",
     "illuminate/database": "^5.2",
     "illuminate/http": "^5.2",
-    "illuminate/console": "^5.2"
+    "illuminate/console": "^5.2",
+    "ramsey/uuid": "^3.4"
   },
   "require-dev": {
     "graham-campbell/testbench": "^3.1",

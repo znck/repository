@@ -11,10 +11,11 @@ use Znck\Repositories\Contracts\RepositoryUpdateInterface;
 use Znck\Repositories\Exceptions\RepositoryException;
 use Znck\Repositories\Traits\RepositoryCriteriaTrait;
 use Znck\Repositories\Traits\RepositoryQueryTrait;
+use Znck\Repositories\Traits\RepositoryTransactionsTrait;
 
 abstract class Repository implements RepositoryQueryInterface, RepositoryCriteriaInterface, RepositoryCreateInterface, RepositoryUpdateInterface, RepositoryDeleteInterface
 {
-    use RepositoryCriteriaTrait, RepositoryQueryTrait;
+    use RepositoryCriteriaTrait, RepositoryQueryTrait, RepositoryTransactionsTrait;
     /**
      * Instance of laravel App.
      *
