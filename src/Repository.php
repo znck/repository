@@ -61,11 +61,21 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
      * Create a new instance of repository.
      *
      * @return $this
-     * @codeCoverageIgnore
      */
     public function self()
     {
-        return $this->app->make(static::class);
+        return $this->makeRepository(static::class);
+    }
+
+    /**
+     * Create an instance of given repository
+     *
+     * @param string $class
+     *
+     * @return Repository
+     */
+    public function makeRepository(string $class) {
+        return $this->app->make($class);
     }
 
     /**
