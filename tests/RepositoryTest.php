@@ -65,7 +65,9 @@ class RepositoryTest extends AbstractTestCase
     {
         if (! $this->app) {
             $this->app = new Container();
-            $this->app->singleton(DummyModelForMocking::class, function () {return $this->makeModel(); });
+            $this->app->singleton(DummyModelForMocking::class, function () {
+                return $this->makeModel();
+            });
         }
         $mocked = $this
           ->getMockBuilder(DummyRepositoryForMocking::class)
@@ -211,6 +213,7 @@ class DummyModelForMocking extends Model
 class DummyRepositoryWithWrongModel extends Repository
 {
     protected $model = DummyInvalidModel::class;
+
     public function create(array $attributes)
     {
     }
@@ -259,6 +262,7 @@ class DummyRepositoryWithModelFunction extends Repository
 class DummyRepositoryForMocking extends Repository
 {
     protected $model = DummyModelForMocking::class;
+
     public function create(array $attributes)
     {
     }

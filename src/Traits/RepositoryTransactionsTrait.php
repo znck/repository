@@ -20,10 +20,12 @@ trait RepositoryTransactionsTrait
      *
      * @return \Znck\Repositories\Exceptions\ResourceFailedException
      */
-    protected function makeResourceFailedException($errors, $e) {
+    protected function makeResourceFailedException($errors, $e)
+    {
         if ($class = config('repository.errors.fallback')) {
             return $this->app->make($class, [null, $errors, $e]);
         }
+
         return new ResourceFailedException(null, $errors, $e);
     }
 
@@ -33,10 +35,12 @@ trait RepositoryTransactionsTrait
      *
      * @return \Znck\Repositories\Exceptions\DeleteResourceFailedException
      */
-    protected function makeDeleteResourceFailedException($errors, $e) {
+    protected function makeDeleteResourceFailedException($errors, $e)
+    {
         if ($class = config('repository.errors.delete')) {
             return $this->app->make($class, [null, $errors, $e]);
         }
+
         return new DeleteResourceFailedException(null, $errors, $e);
     }
 
@@ -46,10 +50,12 @@ trait RepositoryTransactionsTrait
      *
      * @return \Znck\Repositories\Exceptions\UpdateResourceFailedException
      */
-    protected function makeUpdateResourceFailedException($errors, $e) {
+    protected function makeUpdateResourceFailedException($errors, $e)
+    {
         if ($class = config('repository.errors.update')) {
             return $this->app->make($class, [null, $errors, $e]);
         }
+
         return new UpdateResourceFailedException(null, $errors, $e);
     }
 
@@ -59,10 +65,12 @@ trait RepositoryTransactionsTrait
      *
      * @return \Znck\Repositories\Exceptions\StoreResourceFailedException
      */
-    protected function makeCreateResourceFailedException($errors, $e) {
+    protected function makeCreateResourceFailedException($errors, $e)
+    {
         if ($class = config('repository.errors.create')) {
             return $this->app->make($class, [null, $errors, $e]);
         }
+
         return new StoreResourceFailedException(null, $errors, $e);
     }
 
@@ -70,7 +78,7 @@ trait RepositoryTransactionsTrait
      * Run in a transaction.
      *
      * @param callable $callback
-     * @param Model $model
+     * @param Model    $model
      *
      * @return Model
      */
@@ -81,7 +89,9 @@ trait RepositoryTransactionsTrait
         try {
             $this->runInTransaction($callback, $model, $arguments);
         } catch (Throwable $e) {
-            if (!$this->shouldThrowException()) { return $model; }
+            if (! $this->shouldThrowException()) {
+                return $model;
+            }
 
             $errors = $this->getErrorsFromModel($model);
             switch ($this->getMethod()) {
@@ -110,8 +120,8 @@ trait RepositoryTransactionsTrait
         return [];
     }
 
-
-    protected function shouldThrowException() {
+    protected function shouldThrowException()
+    {
         if (isset($this->throwError)) {
             return $this->throwError;
         }
