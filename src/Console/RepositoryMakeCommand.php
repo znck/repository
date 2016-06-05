@@ -26,7 +26,7 @@ class RepositoryMakeCommand extends GeneratorCommand
      * @var string
      */
     protected $type = 'Repository';
-    
+
     protected $model;
 
     /**
@@ -51,17 +51,20 @@ class RepositoryMakeCommand extends GeneratorCommand
         return $rootNamespace.'\\'.str_replace('/', '\\', $this->getRepositoriesDirectory());
     }
 
-    protected function parseName($name) {
+    protected function parseName($name)
+    {
         if (Str::endsWith($name, 'Repository')) {
             $this->model = Str::replaceLast('Repository', '', $name);
         } else {
             $this->model = $name;
             $name .= 'Repository';
         }
+
         return parent::parseName($name);
     }
-    
-    protected function buildClass($name) {
+
+    protected function buildClass($name)
+    {
         $stub = parent::buildClass($name);
 
         $repository = config('repository.base_repository', Repository::class);
@@ -72,17 +75,19 @@ class RepositoryMakeCommand extends GeneratorCommand
         return $stub;
     }
 
-    protected function replaceRepository(&$stub, $class) {
+    protected function replaceRepository(&$stub, $class)
+    {
         $stub = str_replace('DummyBaseRepository', $class, $stub);
 
         return $this;
     }
 
-    protected function replaceModel(&$stub, $name) {
+    protected function replaceModel(&$stub, $name)
+    {
         $name = $this->parseModelName($name);
-        
-        if (!class_exists($name)) {
-            $comments = '// FIXME: Add model class name. Detected: ' . $name;
+
+        if (! class_exists($name)) {
+            $comments = '// FIXME: Add model class name. Detected: '.$name;
         }
 
         $namespace = "use ${name};";
@@ -94,7 +99,8 @@ class RepositoryMakeCommand extends GeneratorCommand
         return $this;
     }
 
-    protected function parseModelName($name) {
+    protected function parseModelName($name)
+    {
         $rootNamespace = $this->laravel->getNamespace();
 
         if (Str::contains($name, '/')) {
@@ -117,7 +123,8 @@ class RepositoryMakeCommand extends GeneratorCommand
     /**
      * @return string
      */
-    protected function getRepositoriesDirectory() {
+    protected function getRepositoriesDirectory()
+    {
         return 'Repositories';
     }
 }

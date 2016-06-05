@@ -68,13 +68,14 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
     }
 
     /**
-     * Create an instance of given repository
+     * Create an instance of given repository.
      *
      * @param string $class
      *
      * @return Repository
      */
-    public function makeRepository(string $class) {
+    public function makeRepository(string $class)
+    {
         return $this->app->make($class);
     }
 
