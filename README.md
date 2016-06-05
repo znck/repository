@@ -35,76 +35,12 @@ Don't use your Eloquent models directly into your controllers, instead create a 
 - [ ] Create documentation/wiki.
 - [ ] Build a collection of common criterion.
 
-## Installation
-
-[PHP](https://php.net) 7.0+ is required.
-
-To get the latest version of Repository, simply require the project using [Composer](https://getcomposer.org):
-
-```bash
-$ composer require znck/repository
-```
-
-Instead, you may of course manually update your require block and run `composer update` if you so choose:
-
-```json
-{
-    "require": {
-        "znck/repository": "^0.2"
-    }
-}
-```
-
-Once `Repository` is installed, you have to register its service provider. Open `config/app.php` and add `Znck\Repository\RepositoryServiceProvider::class` to `providers` key. Your `config/app.php` should look like this.
-
-```php
-<?php return [
-  // ...
-  'providers' => [
-    // ....
-    Znck\Repository\RepositoryServiceProvider::class,
-  ]
-  // ...
-];
-```
-
-## Usage
-See [docs](https://github.com/znck/repository/wiki) for detailed explaintaion.
-- Create a new repository  
-  `php artisan make:repository UserRepository`
-- Add logic for `create`, `update` and `delete` method in `app/Repositories/UserRepository.php` file.
-- Now you can inject this repository in your controllers.
-  ```php
-  ...
-  class UserController extends Controller {
-    public function register(UserRepository $repository, Request $request) {
-      $user = $repository->create($request->all());
-      if (!$user) {
-        // Throw validation error or something.
-      }
-      return response('', 202);
-    }
-    
-    public function index(UserRepository $repository) {
-      return $repository->all();
-      // return $repository->paginate(20);
-    }
-    
-    public function show(UserRepository $repository, $id) {
-      return $repository->enableHttpMode()->find($id); // This will throw 404 exception if not found.
-    }
-  }
-  ```
+## Docs
+See [wiki](https://github.com/znck/repository/wiki).
 
 ## Change log
 
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
-
-## Testing
-
-``` bash
-$ composer test
-```
+Please see [releases](https://github.com/znck/repository/releases) for more information what has changed recently.
 
 ## Contributing
 

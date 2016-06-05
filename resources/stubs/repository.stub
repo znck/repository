@@ -1,8 +1,12 @@
 <?php namespace DummyNamespace;
 
-use Znck\Repositories\Repository;
+DummyModelNamespace
+use DummyBaseRepository as Repository;
 use Znck\Repositories\Exceptions\UnimplementedException;
 
+/**
+ * @method DummyModelClass find(string $id)
+ */
 class DummyClass extends Repository
 {
     /**
@@ -10,7 +14,7 @@ class DummyClass extends Repository
      *
      * @return string
      */
-    protected $modelClass /* = \App\User::class */ ;
+    protected $model = DummyModelClass::class; HelperComments
 
     /**
      * Booting repository.
@@ -26,9 +30,7 @@ class DummyClass extends Repository
      *
      * @param array $attributes
      *
-     * @return \Illuminate\Database\Eloquent\Model
-     *
-     * @throws \Znck\Repositories\Exceptions\UnimplementedException
+     * @return DummyModelClass
      */
     public function create(array $attributes)
     {
@@ -38,11 +40,9 @@ class DummyClass extends Repository
     /**
      * Delete resource.
      *
-     * @param string|int|\Illuminate\Database\Eloquent\Model $id
+     * @param string|int|DummyModelClass $id
      *
      * @return bool
-     *
-     * @throws \Znck\Repositories\Exceptions\UnimplementedException
      */
     public function delete($id)
     {
@@ -53,11 +53,9 @@ class DummyClass extends Repository
      * Update resource with given attributes.
      *
      * @param array $attributes
-     * @param string|int|\Illuminate\Database\Eloquent\Model $id
+     * @param string|int|DummyModelClass $id
      *
-     * @return \Illuminate\Database\Eloquent\Model
-     *
-     * @throws \Znck\Repositories\Exceptions\UnimplementedException
+     * @return DummyModelClass
      */
     public function update(array $attributes, $id)
     {

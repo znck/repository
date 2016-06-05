@@ -21,6 +21,9 @@ trait RepositoryTransactionsTrait
      * @return \Znck\Repositories\Exceptions\ResourceFailedException
      */
     protected function makeResourceFailedException($errors, $e) {
+        if ($class = config('repository.errors.fallback')) {
+            return $this->app->make($class, [null, $errors, $e]);
+        }
         return new ResourceFailedException(null, $errors, $e);
     }
 
@@ -31,6 +34,9 @@ trait RepositoryTransactionsTrait
      * @return \Znck\Repositories\Exceptions\DeleteResourceFailedException
      */
     protected function makeDeleteResourceFailedException($errors, $e) {
+        if ($class = config('repository.errors.delete')) {
+            return $this->app->make($class, [null, $errors, $e]);
+        }
         return new DeleteResourceFailedException(null, $errors, $e);
     }
 
@@ -41,6 +47,9 @@ trait RepositoryTransactionsTrait
      * @return \Znck\Repositories\Exceptions\UpdateResourceFailedException
      */
     protected function makeUpdateResourceFailedException($errors, $e) {
+        if ($class = config('repository.errors.update')) {
+            return $this->app->make($class, [null, $errors, $e]);
+        }
         return new UpdateResourceFailedException(null, $errors, $e);
     }
 
@@ -51,6 +60,9 @@ trait RepositoryTransactionsTrait
      * @return \Znck\Repositories\Exceptions\StoreResourceFailedException
      */
     protected function makeCreateResourceFailedException($errors, $e) {
+        if ($class = config('repository.errors.create')) {
+            return $this->app->make($class, [null, $errors, $e]);
+        }
         return new StoreResourceFailedException(null, $errors, $e);
     }
 

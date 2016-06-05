@@ -1,0 +1,13 @@
+* text=auto
+
+tests/              ignore-export
+.gitattributes      ignore-export
+.gitignore          ignore-export
+.php_cs             ignore-export
+.styleci.yml        ignore-export
+CHANGELOG.md        ignore-export
+circle.yml          ignore-export
+CONDUCT.md          ignore-export
+CONTRIBUTING.md     ignore-export
+cover.png           ignore-export
+phpunit.xml         ignore-export
