@@ -16,6 +16,7 @@ trait RepositoryQueryTrait
     * Throw HTTP not found error if resource not found.
     *
     * @return $this
+    * @deprecated
     */
    public function enableHttpMode()
    {
@@ -28,6 +29,7 @@ trait RepositoryQueryTrait
     * Don't throw error if resource not found.
     *
     * @return $this
+    * @deprecated
     */
    public function disableHttpMode()
    {
@@ -35,6 +37,19 @@ trait RepositoryQueryTrait
 
        return $this;
    }
+
+    /**
+     * Throw HTTP not found error if resource not found?
+     *
+     * @param bool $status
+     *
+     * @return $this
+     */
+    public function throwOnFailure($status = true) {
+        $this->throwError = $status;
+
+        return $this;
+    }
 
   /**
    * Get all results.
