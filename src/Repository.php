@@ -80,11 +80,25 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
     }
 
     /**
+     * Get empty query for the Eloquent model.
+     *
+     * @throws \Znck\Repositories\Exceptions\RepositoryException
+     *
+     * @return $this
+     */
+    public function refresh()
+    {
+        $this->query = $this->getModel()->newQuery();
+
+        return $this;
+    }
+
+    /**
      * Reset repository scope.
      *
      * @return $this
      */
-    protected function resetScope()
+    public function resetScope()
     {
         $this->skipCriteria(false);
 
@@ -92,17 +106,39 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
     }
 
     /**
-     * Get empty query for the Eloquent model.
+     * Create an instance of repository's model.
      *
      * @throws \Znck\Repositories\Exceptions\RepositoryException
      *
-     * @return $this
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    protected function refresh()
+    public function getModel()
     {
-        $this->query = $this->getModel()->newQuery();
+        if (! $this->instance) {
+            $model = $this->app->make($this->getModelClass());
 
-        return $this;
+            if (! $model instanceof Model) {
+                throw new RepositoryException($this->getModelClass());
+            }
+
+            $this->instance = $model;
+        }
+
+        return $this->instance;
+    }
+
+    public function getModelClass()
+    {
+        if ($this->model) {
+            return $this->model;
+        }
+
+        // Backward compatible.
+        if (method_exists($this, 'model')) {
+            return $this->model();
+        }
+
+        throw new RepositoryException('$model property not defined on '.get_class($this));
     }
 
     /**
@@ -118,41 +154,5 @@ abstract class Repository implements RepositoryQueryInterface, RepositoryCriteri
                 call_user_func([$this, $method]);
             }
         }
-    }
-
-    /**
-     * Create an instance of repository's model.
-     *
-     * @throws \Znck\Repositories\Exceptions\RepositoryException
-     *
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    protected function getModel()
-    {
-        if (! $this->instance) {
-            $model = $this->app->make($this->getModelClass());
-
-            if (! $model instanceof Model) {
-                throw new RepositoryException($this->getModelClass());
-            }
-
-            $this->instance = $model;
-        }
-
-        return $this->instance;
-    }
-
-    private function getModelClass()
-    {
-        if ($this->model) {
-            return $this->model;
-        }
-
-        // Backward compatible.
-        if (method_exists($this, 'model')) {
-            return $this->model();
-        }
-
-        throw new RepositoryException('$model property not defined on '.get_class($this));
     }
 }

@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 use Znck\Repositories\Exceptions\DeleteResourceFailedException;
+use Znck\Repositories\Exceptions\NotFoundResourceException;
 use Znck\Repositories\Exceptions\ResourceFailedException;
 use Znck\Repositories\Exceptions\StoreResourceFailedException;
 use Znck\Repositories\Exceptions\UpdateResourceFailedException;
@@ -73,19 +74,44 @@ trait RepositoryTransactionsTrait
 
         return new StoreResourceFailedException(null, $errors, $e);
     }
+    
+    /**
+     * @param $errors
+     * @param $e
+     *
+     * @return \Znck\Repositories\Exceptions\NotFoundResourceException
+     */
+    protected function makeNotFoundResourceException($errors, $e)
+    {
+        if ($class = config('repository.errors.not-found')) {
+            return $this->app->make($class, [null, $errors, $e]);
+        }
+
+        return new NotFoundResourceException(null, $errors, $e);
+    }
 
     /**
      * Run in a transaction.
      *
      * @param callable $callback
-     * @param Model    $model
      *
      * @return Model
      */
-    protected function transaction($callback, Model &$model)
+    protected function transaction($callback)
     {
         $arguments = func_get_args();
-        array_splice($arguments, 0, 2);
+
+        $model = $arguments[1];
+
+        if (is_array($model)) {
+            $model = $this->app->make($this->model);
+            array_splice($arguments, 0, 1);
+        } else {
+            array_splice($arguments, 0, 2);
+        }
+
+        $model = $this->parseSelf($model);
+
         try {
             $this->runInTransaction($callback, $model, $arguments);
         } catch (Throwable $e) {
@@ -104,6 +130,19 @@ trait RepositoryTransactionsTrait
                 default:
                     throw $this->makeResourceFailedException($errors, $e);
             }
+        }
+
+        return $model;
+    }
+
+    protected function parseSelf($model)
+    {
+        if (is_string($model)) {
+            $model = $this->self()->find($model);
+        }
+
+        if (! $model instanceof $this->model) {
+            throw $this->makeNotFoundResourceException();
         }
 
         return $model;
@@ -129,22 +168,22 @@ trait RepositoryTransactionsTrait
         return true;
     }
 
-    private function beginTransaction()
+    protected function beginTransaction()
     {
         DB::beginTransaction();
     }
 
-    private function commitTransaction()
+    protected function commitTransaction()
     {
         DB::commit();
     }
 
-    private function rollbackTransaction()
+    protected function rollbackTransaction()
     {
         DB::rollback();
     }
 
-    private function runInTransaction($callback, Model &$model, $arguments)
+    protected function runInTransaction($callback, Model &$model, $arguments)
     {
         try {
             $this->beginTransaction();
@@ -158,7 +197,7 @@ trait RepositoryTransactionsTrait
         }
     }
 
-    private function getMethod()
+    protected function getMethod()
     {
         return debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3)[2]['function'];
     }
