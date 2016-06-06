@@ -95,22 +95,15 @@ trait RepositoryTransactionsTrait
      *
      * @param callable $callback
      *
-     * @return Model
+     * @param \Illuminate\Database\Eloquent\Model $model
+     *
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    protected function transaction($callback)
+    protected function transaction($callback, Model &$model)
     {
         $arguments = func_get_args();
 
-        $model = $arguments[1];
-
-        if (is_array($model)) {
-            $model = $this->app->make($this->model);
-            array_splice($arguments, 0, 1);
-        } else {
-            array_splice($arguments, 0, 2);
-        }
-
-        $model = $this->parseSelf($model);
+        array_splice($arguments, 0, 2);
 
         try {
             $this->runInTransaction($callback, $model, $arguments);
