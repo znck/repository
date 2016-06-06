@@ -1,7 +1,8 @@
 <?php namespace Znck\Repositories\Exceptions;
 
-use Symfony\Component\Translation\Exception\NotFoundResourceException as SymfonyNotFoundResourceException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class NotFoundResourceException extends SymfonyNotFoundResourceException
+class NotFoundResourceException extends NotFoundHttpException
 {
+    
 }
