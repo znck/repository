@@ -2,6 +2,9 @@
 
 use Znck\Repositories\Contracts\CriteriaInterface;
 
+/**
+ * @internal
+ */
 trait RepositoryCriteriaTrait
 {
     /**

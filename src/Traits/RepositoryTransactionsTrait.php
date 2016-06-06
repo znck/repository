@@ -11,7 +11,7 @@ use Znck\Repositories\Exceptions\StoreResourceFailedException;
 use Znck\Repositories\Exceptions\UpdateResourceFailedException;
 
 /**
- * @property bool $throwError
+ * @internal
  */
 trait RepositoryTransactionsTrait
 {

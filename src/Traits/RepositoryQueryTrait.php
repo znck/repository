@@ -3,6 +3,9 @@
 use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * @internal
+ */
 trait RepositoryQueryTrait
 {
     /**
@@ -12,34 +15,6 @@ trait RepositoryQueryTrait
     */
    protected $throwError = false;
 
-   /**
-    * Throw HTTP not found error if resource not found.
-    *
-    * @return $this
-    *
-    * @deprecated
-    */
-   public function enableHttpMode()
-   {
-       $this->throwError = true;
-
-       return $this;
-   }
-
-   /**
-    * Don't throw error if resource not found.
-    *
-    * @return $this
-    *
-    * @deprecated
-    */
-   public function disableHttpMode()
-   {
-       $this->throwError = false;
-
-       return $this;
-   }
-
     /**
      * Throw HTTP not found error if resource not found?
      *
@@ -47,7 +22,7 @@ trait RepositoryQueryTrait
      *
      * @return $this
      */
-    public function throwOnFailure($status = true)
+    public function setThrowOnFail($status = true)
     {
         $this->throwError = $status;
 
