@@ -87,7 +87,7 @@ trait RepositoryTransactionsTrait
             return $this->app->make($class, [null, $errors, $e]);
         }
 
-        return new NotFoundResourceException(null, $errors, $e);
+        return new NotFoundResourceException;
     }
 
     /**
@@ -142,7 +142,7 @@ trait RepositoryTransactionsTrait
         }
 
         if (! $model instanceof $this->model) {
-            throw $this->makeNotFoundResourceException();
+            throw $this->makeNotFoundResourceException([], null);
         }
 
         return $model;
