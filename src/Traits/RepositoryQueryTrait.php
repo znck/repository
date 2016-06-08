@@ -1,5 +1,6 @@
 <?php namespace Znck\Repositories\Traits;
 
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -131,6 +132,12 @@ trait RepositoryQueryTrait
           throw new InvalidArgumentException();
       }
 
-      return $this->query->where($first, $second, $third, $fourth)->get();
+      if ($count > 2 and Str::contains($second, 'In')) {
+          $this->query->whereIn($first, $third, $fourth, hash_equals('NotIn', $second));
+      } else {
+          $this->query->where($first, $second, $third, $fourth);
+      }
+
+      return $this->query->get();
   }
 }

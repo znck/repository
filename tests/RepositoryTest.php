@@ -106,9 +106,9 @@ class RepositoryTest extends AbstractTestCase
     {
         $mock = $this->makeRepository();
         $this->builder->expects($this->exactly(2))->method('find');
-        $mock->disableHttpMode()->find(1);
+        $mock->setThrowOnFail(false)->find(1);
         $this->expectException(NotFoundHttpException::class);
-        $mock->enableHttpMode()->find(1);
+        $mock->setThrowOnFail()->find(1);
     }
 
     public function test_it_can_get_findBy()
@@ -116,9 +116,9 @@ class RepositoryTest extends AbstractTestCase
         $mock = $this->makeRepository();
         $this->builder->expects($this->exactly(2))->method('first');
         $this->builder->expects($this->exactly(2))->method('where');
-        $mock->disableHttpMode()->findBy('id', 1);
+        $mock->setThrowOnFail(false)->findBy('id', 1);
         $this->expectException(NotFoundHttpException::class);
-        $mock->enableHttpMode()->findBy('id', 1);
+        $mock->setThrowOnFail()->findBy('id', 1);
     }
 
     public function test_it_can_get_paginate()
