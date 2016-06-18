@@ -7,10 +7,10 @@ interface CriteriaInterface
     /**
      * Apply the criteria on the repository.
      *
-     * @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query
-     * @param \Znck\Repositories\Contracts\RepositoryQueryInterface                    $repository
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Znck\Repositories\Repository $repository
      *
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function apply($query, RepositoryQueryInterface $repository);
+    public function apply($query, $repository);
 }
