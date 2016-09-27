@@ -4,6 +4,9 @@ use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;
 use Znck\Repositories\Repository;
 
+/**
+ * @property \Illuminate\Foundation\Application $laravel
+ */
 class RepositoryMakeCommand extends GeneratorCommand
 {
     /**
@@ -27,66 +30,81 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     protected $type = 'Repository';
 
-    protected $model;
-
-    /**
-     * Get the stub file for the generator.
-     *
-     * @return string
-     */
-    protected function getStub()
-    {
+    protected function getStub() {
         return dirname(dirname(__DIR__)).'/resources/stubs/repository.stub';
     }
 
-    /**
-     * Get the default namespace for the class.
-     *
-     * @param string $rootNamespace
-     *
-     * @return string
-     */
-    protected function getDefaultNamespace($rootNamespace)
-    {
-        return $rootNamespace.'\\'.str_replace('/', '\\', $this->getRepositoriesDirectory());
+    protected function getDefaultNamespace($rootNamespace) {
+        return $rootNamespace.'\\'.$this->getRepositoriesDirectory();
     }
 
-    protected function parseName($name)
-    {
-        if (Str::endsWith($name, 'Repository')) {
-            $this->model = Str::replaceLast('Repository', '', $name);
-        } else {
-            $this->model = $name;
+    protected function parseModel($name) {
+        $rootNamespace = $this->laravel->getNamespace();
+
+        if (Str::startsWith($name, $rootNamespace)) {
+            return $name;
+        }
+
+        if (Str::contains($name, '/')) {
+            $name = str_replace('/', '\\', $name);
+        }
+
+        return $this->parseModel(trim($rootNamespace, '\\').'\\'.$name);
+    }
+
+    protected function parseName($name) {
+        $rootNamespace = $this->laravel->getNamespace();
+
+        if (!Str::endsWith($name, 'Repository')) {
             $name .= 'Repository';
         }
 
-        return parent::parseName($name);
+        if (Str::contains($name, ['Models', 'Eloquent'])) {
+            $name = str_replace(['Models', 'Eloquent'], '', $name);
+        }
+
+        if (Str::contains($name, '/')) {
+            $name = str_replace('/', '\\', $name);
+        }
+
+        $name = str_replace('\\\\', '\\', $name);
+
+        if (Str::startsWith($name, $rootNamespace)) {
+            if (!Str::contains($name, 'Repositories')) {
+                return str_replace($rootNamespace, $this->getDefaultNamespace($rootNamespace), $name);
+            }
+
+            return $name;
+        }
+
+        return $this->parseName($this->getDefaultNamespace(trim($rootNamespace, '\\')).'\\'.$name);
     }
 
-    protected function buildClass($name)
-    {
+    protected function buildClass($name) {
         $stub = parent::buildClass($name);
 
         $repository = config('repository.base_repository', Repository::class);
-        $this->replaceRepository($stub, $repository);
 
-        $this->replaceModel($stub, $this->model);
+        $this->replaceRepository($stub, $repository);
+        $this->replaceModel($stub);
 
         return $stub;
     }
 
-    protected function replaceRepository(&$stub, $class)
-    {
+    protected function replaceRepository(&$stub, $class) {
+        if (!hash_equals(Repository::class, $class)) {
+            $class .= ' as Repository';
+        }
+
         $stub = str_replace('DummyBaseRepository', $class, $stub);
 
         return $this;
     }
 
-    protected function replaceModel(&$stub, $name)
-    {
-        $name = $this->parseModelName($name);
+    protected function replaceModel(&$stub) {
+        $name = $this->parseModel($this->getNameInput());
 
-        if (! class_exists($name)) {
+        if (!class_exists($name)) {
             $comments = '// FIXME: Add model class name. Detected: '.$name;
         }
 
@@ -99,32 +117,7 @@ class RepositoryMakeCommand extends GeneratorCommand
         return $this;
     }
 
-    protected function parseModelName($name)
-    {
-        $rootNamespace = $this->laravel->getNamespace();
-
-        if (Str::contains($name, '/')) {
-            $name = str_replace('/', '\\', $name);
-        }
-
-        if (Str::startsWith($name, $this->getDefaultNamespace($rootNamespace))) {
-            $name = str_replace($this->getDefaultNamespace($rootNamespace), '', $name);
-        } elseif (Str::contains($name, $this->getRepositoriesDirectory())) {
-            $name = substr($name, strpos($name, $this->getRepositoriesDirectory()) + strlen($this->getRepositoriesDirectory()));
-        }
-
-        if (Str::startsWith($name, $rootNamespace)) {
-            return $name;
-        }
-
-        return str_replace('\\\\', '\\', $rootNamespace.'\\'.trim($name, '\\'));
-    }
-
-    /**
-     * @return string
-     */
-    protected function getRepositoriesDirectory()
-    {
+    protected function getRepositoriesDirectory() {
         return 'Repositories';
     }
 }

@@ -27,20 +27,18 @@
   ],
   "prefer-stable": true,
   "require": {
-    "php": ">=7.0",
-    "illuminate/support": "^5.1",
-    "illuminate/database": "^5.1",
-    "illuminate/http": "^5.1",
-    "illuminate/console": "^5.1",
-    "ramsey/uuid": "^3.4",
-    "friendsofphp/php-cs-fixer": "^1.11"
+    "illuminate/support": "^5.3",
+    "illuminate/database": "^5.3",
+    "illuminate/console": "^5.3"
   },
   "require-dev": {
-    "graham-campbell/testbench": "^3.1",
-    "phpunit/phpunit": "^5.1",
-    "mockery/mockery": "^0.9.4",
-    "phpunit/php-code-coverage": "^3.1",
-    "satooshi/php-coveralls": "^1.0"
+    "phpunit/php-code-coverage": "^4.0",
+    "friendsofphp/php-cs-fixer": "^1.12",
+    "satooshi/php-coveralls": "^1.0",
+    "phpunit/phpunit": "^5.5",
+    "graham-campbell/testbench": "^3.2",
+    "mockery/mockery": "^0.9.5",
+    "laravel/scout": "^1.1"
   },
   "scripts": {
     "test": "phpunit"

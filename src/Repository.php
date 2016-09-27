@@ -1,159 +1,401 @@
 <?php namespace Znck\Repositories;
 
-use Illuminate\Container\Container as App;
+use Exception;
+use Illuminate\Contracts\Container\Container as Application;
+use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Znck\Repositories\Contracts\RepositoryCreateInterface;
-use Znck\Repositories\Contracts\RepositoryCriteriaInterface;
-use Znck\Repositories\Contracts\RepositoryDeleteInterface;
-use Znck\Repositories\Contracts\RepositoryQueryInterface;
-use Znck\Repositories\Contracts\RepositoryUpdateInterface;
+use Illuminate\Validation\ValidationException;
+use Laravel\Scout\Searchable;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Znck\Repositories\Contracts\Criteria;
 use Znck\Repositories\Exceptions\RepositoryException;
-use Znck\Repositories\Traits\MutationHelperTrait;
-use Znck\Repositories\Traits\RepositoryCriteriaTrait;
-use Znck\Repositories\Traits\RepositoryQueryTrait;
-use Znck\Repositories\Traits\RepositoryTransactionsTrait;
 
-abstract class Repository implements RepositoryQueryInterface, RepositoryCriteriaInterface, RepositoryCreateInterface, RepositoryUpdateInterface, RepositoryDeleteInterface
+abstract class Repository implements Contracts\Repository
 {
-    use RepositoryCriteriaTrait, RepositoryQueryTrait, RepositoryTransactionsTrait, MutationHelperTrait;
+
+    static public $repositories = [];
     /**
-     * Instance of laravel App.
-     *
-     * @var App
+     * @var Application
      */
     protected $app;
 
     /**
-     * Instance of the model.
-     *
-     * @var \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+     * @var \Illuminate\Support\Collection
      */
-    protected $query;
+    protected $criteria;
 
     /**
-     * Class name of the Eloquent model.
-     *
      * @var string
      */
     protected $model;
 
     /**
-     * @var \Illuminate\Database\Eloquent\Model
+     * @var Model
      */
-    private $instance;
+    protected $instance;
 
     /**
-     * Create instance of a repository.
-     *
-     * @param \Illuminate\Container\Container $app
-     * @param \Illuminate\Support\Collection  $collection
+     * @var \Illuminate\Database\Eloquent\Builder
      */
-    public function __construct(App $app, Collection $collection)
-    {
+    protected $query;
+
+    /**
+     * @var \Illuminate\Contracts\Validation\Factory
+     */
+    protected $validator;
+
+    /**
+     * Validation rules.
+     *
+     * @var array
+     */
+    protected $rules = [];
+
+    /**
+     * @var bool
+     */
+    protected $skipCriteria = false;
+
+    /**
+     * @var bool
+     */
+    protected $skipValidation = false;
+
+    public function __construct(Application $app) {
         $this->app = $app;
-        $this->criteria = $collection;
-        $this->resetScope();
-        $this->refresh();
-        $this->boot();
+        $this->criteria = new Collection();
+        $this->makeModel();
     }
 
-    /**
-     * Create a new instance of repository.
-     *
-     * @return $this
-     */
-    public function self()
-    {
-        return $this->makeRepository(static::class);
-    }
+    protected function makeModel() {
+        $class = $this->model;
 
-    /**
-     * Create an instance of given repository.
-     *
-     * @param string $class
-     *
-     * @return Repository
-     */
-    public function makeRepository(string $class)
-    {
-        return $this->app->make($class);
-    }
-
-    /**
-     * Get empty query for the Eloquent model.
-     *
-     * @throws \Znck\Repositories\Exceptions\RepositoryException
-     *
-     * @return $this
-     */
-    public function refresh()
-    {
-        $this->query = $this->getModel()->newQuery();
-
-        return $this;
-    }
-
-    /**
-     * Reset repository scope.
-     *
-     * @return $this
-     */
-    public function resetScope()
-    {
-        $this->skipCriteria(false);
-
-        return $this;
-    }
-
-    /**
-     * Create an instance of repository's model.
-     *
-     * @throws \Znck\Repositories\Exceptions\RepositoryException
-     *
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function getModel()
-    {
-        if (! $this->instance) {
-            $model = $this->app->make($this->getModelClass());
-
-            if (! $model instanceof Model) {
-                throw new RepositoryException($this->getModelClass());
-            }
-
-            $this->instance = $model;
+        if (!is_string($class) or !class_exists($class)) {
+            throw new RepositoryException($class);
         }
 
+        $this->instance = $this->app->make($class);
+
+        if (!$this->instance instanceof Model) {
+            throw new RepositoryException($class);
+        }
+
+        $this->query = $this->instance->newQuery();
+    }
+
+    /**
+     * Remove all criteria.
+     *
+     * @return $this
+     */
+    public function clearCriteria() {
+        $this->criteria = new Collection();
+
+        return $this;
+    }
+
+    /**
+     * Get all items.
+     *
+     * @param array $columns
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function all($columns = ['*']) {
+        $this->applyCriteria();
+
+        return $this->getQuery()->get($columns);
+    }
+
+    /**
+     * Retrieve the "count" result of the query.
+     *
+     * @param  string $columns
+     *
+     * @return int
+     */
+    public function count($columns = '*') {
+        $this->applyCriteria();
+
+        return $this->getQuery()->count($columns);
+    }
+
+    /**
+     * Find a model by its primary key.
+     *
+     * @param string|int $id
+     * @param array $columns
+     *
+     * @return Model
+     */
+    public function find($id, $columns = ['*']) {
+        $this->applyCriteria();
+
+        $result = $this->getQuery()->find($id, $columns);
+
+        if (!$result instanceof Model) {
+            throw new NotFoundHttpException();
+        }
+
+        return $result;
+    }
+
+    protected function applyCriteria() {
+        if ($this->skipCriteria) {
+            return $this;
+        }
+
+        foreach ($this->getCriteria() as $criteria) {
+            $criteria->apply($this->query, $this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+     */
+    public function getQuery() {
+        return $this->query;
+    }
+
+    /**
+     * Get all criteria.
+     *
+     * @return \Illuminate\Support\Collection|Criteria[]
+     */
+    public function getCriteria() {
+        return $this->criteria;
+    }
+
+    /**
+     * Find a model by given key. (This would return first matching object).
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return Model
+     */
+    public function findBy(string $key, $value) {
+        $this->applyCriteria();
+
+        $result = $this->getQuery()->where($key, $value)->first();
+
+        if (!$result instanceof Model) {
+            throw new NotFoundHttpException();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Find models by their primary keys.
+     *
+     * @param array $ids
+     * @param array $columns
+     *
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function findMany(array $ids, $columns = ['*']) {
+        $this->applyCriteria();
+
+        return $this->getQuery()
+            ->whereIn($this->getModel()->getKeyName(), $ids)
+            ->get();
+    }
+
+    /**
+     * @return Model
+     */
+    public function getModel(): Model {
         return $this->instance;
     }
 
-    public function getModelClass()
-    {
-        if ($this->model) {
-            return $this->model;
-        }
+    /**
+     * Paginate the given query.
+     *
+     * @param  int $perPage
+     * @param  array $columns
+     * @param  string $pageName
+     * @param  int|null $page
+     *
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
+        $this->applyCriteria();
 
-        // Backward compatible.
-        if (method_exists($this, 'model')) {
-            return $this->model();
-        }
-
-        throw new RepositoryException('$model property not defined on '.get_class($this));
+        return $this->getQuery()->paginate($perPage, $columns, $pageName, $page);
     }
 
     /**
-     * Booting repository.
+     * Remove a criterion
      *
-     * @return void
+     * @param Criteria|null $criteria
+     *
+     * @return Criteria
      */
-    protected function boot()
-    {
-        $class = static::class;
-        foreach (class_uses_recursive($class) as $trait) {
-            if (method_exists($class, $method = 'boot'.class_basename($trait))) {
-                call_user_func([$this, $method]);
+    public function popCriteria(Criteria $criteria = null) : Criteria {
+        if (is_null($criteria)) {
+            return $this->getCriteria()->pop();
+        }
+
+        $class = get_class($criteria);
+        foreach ($this->getCriteria() as $index => $value) {
+            if ($value instanceof $class) {
+                $this->getCriteria()->slice($index, 1);
+
+                return $value;
             }
         }
+
+        return null;
+    }
+
+    /**
+     * Push Criteria for filter the query
+     *
+     * @param Criteria $criteria
+     *
+     * @return $this
+     */
+    public function pushCriteria(Criteria $criteria) {
+        $this->getCriteria()->push($criteria);
+
+        return $this;
+    }
+
+    /**
+     * Find models matching query string.
+     *
+     * @param string $q
+     *
+     * @return \Laravel\Scout\Builder
+     *
+     * @throws \Exception
+     */
+    public function search(string $q) {
+        if (!in_array(Searchable::class, class_uses_recursive($this->model))) {
+            throw new Exception("{$this->model} should use ".Searchable::class);
+        }
+
+        /** @var \Laravel\Scout\Builder $scout */
+        /** @noinspection PhpUndefinedMethodInspection */
+        $scout = $this->getModel()->search($q);
+
+        if (!$this->skipCriteria) {
+            foreach ($this->getCriteria() as $criteria) {
+                $criteria->apply($scout, $this);
+            }
+        }
+
+        return $scout;
+    }
+
+    /**
+     * Paginate the given query into a simple paginator.
+     *
+     * @param  int $perPage
+     * @param  array $columns
+     * @param  string $pageName
+     * @param  int|null $page
+     *
+     * @return \Illuminate\Contracts\Pagination\Paginator
+     */
+    public function simplePaginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
+        $this->applyCriteria();
+
+        return $this->getQuery()->simplePaginate($perPage, $columns, $pageName, $page);
+    }
+
+    /**
+     * @param bool $skip
+     *
+     * @return $this
+     */
+    public function skipCriteria($skip = true) {
+        $this->skipCriteria = $skip;
+
+        return $this;
+    }
+
+    /**
+     * Skip validation.
+     *
+     * @param bool $skip
+     *
+     * @return \Znck\Repositories\Contracts\Repository
+     */
+    public function skipValidation($skip = true) {
+        $this->skipValidation = $skip;
+
+        return $this;
+    }
+
+    /**
+     * Validate attributes.
+     *
+     * @param array $attributes
+     * @param Model $model
+     *
+     * @return $this
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function validate(array $attributes, Model $model = null) {
+        if ($this->skipValidation) {
+            return $this;
+        }
+
+        if (!$this->validator) {
+            $this->validator = $this->app->make(Factory::class);
+        }
+
+        $validator = $this->validator->make($this->getRules(), $attributes);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRules(): array {
+        return $this->rules;
+    }
+
+    /**
+     * Get result of the query.
+     *
+     * @param string|array|\Closure $column
+     * @param string $operator
+     * @param mixed $value
+     * @param string $boolean
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function where($column, $operator = null, $value = null, $boolean = 'and') {
+        $this->applyCriteria();
+
+        return $this->getQuery()->where($column, $operator, $value, $boolean)->get();
+    }
+
+    static public function register(array $map) {
+        self::$repositories += $map;
+    }
+
+    /**
+     * Reset repository.
+     *
+     * @return \Znck\Repositories\Contracts\Repository
+     */
+    public function refresh() {
+        $this->query = $this->getModel()->newQuery();
+
+        return $this;
     }
 }

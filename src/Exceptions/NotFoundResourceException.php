@@ -4,5 +4,5 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NotFoundResourceException extends NotFoundHttpException
 {
-    
+    //
 }

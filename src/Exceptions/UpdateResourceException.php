@@ -1,5 +1,5 @@
 <?php namespace Znck\Repositories\Exceptions;
 
-class UpdateResourceFailedException extends ResourceFailedException
+class UpdateResourceException extends ResourceException
 {
 }

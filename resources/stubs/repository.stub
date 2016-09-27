@@ -1,64 +1,31 @@
 <?php namespace DummyNamespace;
 
 DummyModelNamespace
-use DummyBaseRepository as Repository;
-use Znck\Repositories\Exceptions\UnimplementedException;
+use DummyBaseRepository;
 
 /**
- * @method DummyModelClass find(string $id)
+ * @method DummyModelClass find(string|int $id)
+ * @method DummyModelClass findBy(string $key, $value)
+ * @method DummyModelClass create(array $attr)
+ * @method DummyModelClass update(string|int|DummyModelClass $id, array $attr, array $o = [])
+ * @method DummyModelClass delete(string|int|DummyModelClass $id)
+ * @method DummyClass validate(array $attr, DummyModelClass|null $model)
  */
 class DummyClass extends Repository
 {
+    use \Znck\Repositories\Traits\RepositoryHelper;
+
     /**
      * Class name of the Eloquent model.
      *
-     * @return string
+     * @var string
      */
     protected $model = DummyModelClass::class; HelperComments
 
     /**
-     * Booting repository.
+     * Validation rules.
      *
-     * @return void
+     * @var array
      */
-    protected function boot () {
-        // Boot up - Add a criteria or something else.
-    }
-
-    /**
-     * Create resource with given attributes.
-     *
-     * @param array $attributes
-     *
-     * @return DummyModelClass
-     */
-    public function create(array $attributes)
-    {
-        throw new UnimplementedException("Implement create method.");
-    }
-
-    /**
-     * Delete resource.
-     *
-     * @param string|int|DummyModelClass $id
-     *
-     * @return bool
-     */
-    public function delete($id)
-    {
-        throw new UnimplementedException("Implement delete method.");
-    }
-
-    /**
-     * Update resource with given attributes.
-     *
-     * @param array $attributes
-     * @param string|int|DummyModelClass $id
-     *
-     * @return DummyModelClass
-     */
-    public function update(array $attributes, $id)
-    {
-        throw new UnimplementedException("Implement update method.");
-    }
+    protected $rules = [];
 }
