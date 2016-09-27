@@ -30,15 +30,18 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     protected $type = 'Repository';
 
-    protected function getStub() {
+    protected function getStub()
+    {
         return dirname(dirname(__DIR__)).'/resources/stubs/repository.stub';
     }
 
-    protected function getDefaultNamespace($rootNamespace) {
+    protected function getDefaultNamespace($rootNamespace)
+    {
         return $rootNamespace.'\\'.$this->getRepositoriesDirectory();
     }
 
-    protected function parseModel($name) {
+    protected function parseModel($name)
+    {
         $rootNamespace = $this->laravel->getNamespace();
 
         if (Str::startsWith($name, $rootNamespace)) {
@@ -52,10 +55,11 @@ class RepositoryMakeCommand extends GeneratorCommand
         return $this->parseModel(trim($rootNamespace, '\\').'\\'.$name);
     }
 
-    protected function parseName($name) {
+    protected function parseName($name)
+    {
         $rootNamespace = $this->laravel->getNamespace();
 
-        if (!Str::endsWith($name, 'Repository')) {
+        if (! Str::endsWith($name, 'Repository')) {
             $name .= 'Repository';
         }
 
@@ -70,7 +74,7 @@ class RepositoryMakeCommand extends GeneratorCommand
         $name = str_replace('\\\\', '\\', $name);
 
         if (Str::startsWith($name, $rootNamespace)) {
-            if (!Str::contains($name, 'Repositories')) {
+            if (! Str::contains($name, 'Repositories')) {
                 return str_replace($rootNamespace, $this->getDefaultNamespace($rootNamespace), $name);
             }
 
@@ -80,7 +84,8 @@ class RepositoryMakeCommand extends GeneratorCommand
         return $this->parseName($this->getDefaultNamespace(trim($rootNamespace, '\\')).'\\'.$name);
     }
 
-    protected function buildClass($name) {
+    protected function buildClass($name)
+    {
         $stub = parent::buildClass($name);
 
         $repository = config('repository.base_repository', Repository::class);
@@ -91,8 +96,9 @@ class RepositoryMakeCommand extends GeneratorCommand
         return $stub;
     }
 
-    protected function replaceRepository(&$stub, $class) {
-        if (!hash_equals(Repository::class, $class)) {
+    protected function replaceRepository(&$stub, $class)
+    {
+        if (! hash_equals(Repository::class, $class)) {
             $class .= ' as Repository';
         }
 
@@ -101,10 +107,11 @@ class RepositoryMakeCommand extends GeneratorCommand
         return $this;
     }
 
-    protected function replaceModel(&$stub) {
+    protected function replaceModel(&$stub)
+    {
         $name = $this->parseModel($this->getNameInput());
 
-        if (!class_exists($name)) {
+        if (! class_exists($name)) {
             $comments = '// FIXME: Add model class name. Detected: '.$name;
         }
 
@@ -117,7 +124,8 @@ class RepositoryMakeCommand extends GeneratorCommand
         return $this;
     }
 
-    protected function getRepositoriesDirectory() {
+    protected function getRepositoriesDirectory()
+    {
         return 'Repositories';
     }
 }

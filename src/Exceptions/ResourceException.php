@@ -17,11 +17,11 @@ class ResourceException extends HttpException implements ErrorMessageProvider
     /**
      * ResourceException constructor.
      *
-     * @param null $message
-     * @param null $errors
+     * @param null            $message
+     * @param null            $errors
      * @param \Exception|null $previous
-     * @param array $headers
-     * @param int $code
+     * @param array           $headers
+     * @param int             $code
      */
     public function __construct(
         $message = null,
@@ -43,11 +43,13 @@ class ResourceException extends HttpException implements ErrorMessageProvider
         }
     }
 
-    public function getErrors() : MessageBagInterface {
+    public function getErrors() : MessageBagInterface
+    {
         return $this->errors;
     }
 
-    public function hasErrors() : bool {
-        return !$this->getErrors()->isEmpty();
+    public function hasErrors() : bool
+    {
+        return ! $this->getErrors()->isEmpty();
     }
 }

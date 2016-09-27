@@ -12,7 +12,8 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     protected $defer = true;
 
-    public function boot() {
+    public function boot()
+    {
         require_once __DIR__.'/helper.php';
     }
 
@@ -21,12 +22,14 @@ class RepositoryServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register() {
+    public function register()
+    {
         $this->app->singleton('command.make.repository', RepositoryMakeCommand::class);
         $this->commands('command.make.repository');
     }
 
-    public function provides() {
+    public function provides()
+    {
         return ['command.make.repository'];
     }
 }

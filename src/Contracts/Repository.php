@@ -16,9 +16,9 @@ interface Repository extends Search
     /**
      * Update the model in the database.
      *
-     * @param  Model|string|int $id
-     * @param  array $attributes
-     * @param  array $options
+     * @param Model|string|int $id
+     * @param array            $attributes
+     * @param array            $options
      *
      * @return Model
      */
@@ -27,7 +27,7 @@ interface Repository extends Search
     /**
      * Delete the model from the database.
      *
-     * @param  Model|string|int $id
+     * @param Model|string|int $id
      *
      * @return bool|null
      */

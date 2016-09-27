@@ -14,19 +14,22 @@ trait RepositoryHelper
 {
     protected $inTransaction = false;
 
-    public function startTransaction() {
+    public function startTransaction()
+    {
         $this->app->make('db')->beginTransaction();
         $this->inTransaction = true;
     }
 
-    public function commitTransaction() {
-        if (!$this->inTransaction) {
+    public function commitTransaction()
+    {
+        if (! $this->inTransaction) {
             $this->app->make('db')->commitTransaction();
             $this->inTransaction = false;
         }
     }
 
-    public function rollbackTransaction() {
+    public function rollbackTransaction()
+    {
         if ($this->inTransaction) {
             $this->app->make('db')->rollbackTransaction();
             $this->inTransaction = false;
@@ -40,7 +43,8 @@ trait RepositoryHelper
      *
      * @return Model
      */
-    public function create(array $attributes) {
+    public function create(array $attributes)
+    {
         try {
             $this->validate($attributes);
         } catch (ValidationException $e) {
@@ -68,14 +72,15 @@ trait RepositoryHelper
     /**
      * Update the model in the database.
      *
-     * @param  Model|string|int $id
-     * @param  array $attributes
-     * @param  array $options
+     * @param Model|string|int $id
+     * @param array            $attributes
+     * @param array            $options
      *
      * @return Model
      */
-    public function update($id, array $attributes, array $options = []) {
-        /** @var Model $instance */
+    public function update($id, array $attributes, array $options = [])
+    {
+        /* @var Model $instance */
         try {
             $instance = $this->app->make(static::class)->find($id);
         } catch (NotFoundResourceException $e) {
@@ -107,12 +112,13 @@ trait RepositoryHelper
     /**
      * Delete the model from the database.
      *
-     * @param  Model|string|int $id
+     * @param Model|string|int $id
      *
      * @return bool|null
      */
-    public function delete($id) {
-        /** @var Model $instance */
+    public function delete($id)
+    {
+        /* @var Model $instance */
         try {
             $instance = $this->app->make(static::class)->find($id);
         } catch (NotFoundResourceException $e) {

@@ -1,7 +1,8 @@
 <?php namespace Znck\Repositories\Contracts;
 
 /**
- * Interface Search
+ * Interface Search.
+ *
  * @internal Znck\Repositories\Contracts
  */
 interface Search extends Query
