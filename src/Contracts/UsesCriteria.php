@@ -1,13 +1,14 @@
 <?php namespace Znck\Repositories\Contracts;
 
 /**
- * Interface UsesCriteria
+ * Interface UsesCriteria.
+ *
  * @internal Znck\Repositories\Contracts
  */
 interface UsesCriteria
 {
     /**
-     * Push Criteria for filter the query
+     * Push Criteria for filter the query.
      *
      * @param Criteria $criteria
      *
@@ -16,7 +17,7 @@ interface UsesCriteria
     public function pushCriteria(Criteria $criteria);
 
     /**
-     * Remove a criterion
+     * Remove a criterion.
      *
      * @param Criteria|null $criteria
      *

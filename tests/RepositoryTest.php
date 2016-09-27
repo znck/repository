@@ -22,7 +22,8 @@ class RepositoryTest extends AbstractTestCase
      */
     protected $builder;
 
-    public function makeBuilder() {
+    public function makeBuilder()
+    {
         if ($this->builder) {
             return $this->builder;
         }
@@ -45,7 +46,8 @@ class RepositoryTest extends AbstractTestCase
      */
     protected $model;
 
-    public function makeModel() {
+    public function makeModel()
+    {
         if ($this->model) {
             return $this->model;
         }
@@ -64,8 +66,9 @@ class RepositoryTest extends AbstractTestCase
      *
      * @return \PHPUnit_Framework_MockObject_MockObject|Repository
      */
-    public function makeRepository($methods = []) {
-        if (!$this->app) {
+    public function makeRepository($methods = [])
+    {
+        if (! $this->app) {
             $this->app = new Container();
             $this->app->singleton(
                 DummyModelForMocking::class,
@@ -83,7 +86,8 @@ class RepositoryTest extends AbstractTestCase
         return $mocked;
     }
 
-    public function makeCriteria($methods = []) {
+    public function makeCriteria($methods = [])
+    {
         $mocked = $this
             ->getMockBuilder(DummyCriteriaForMocking::class)
             ->setMethods($methods)
@@ -92,26 +96,30 @@ class RepositoryTest extends AbstractTestCase
         return $mocked;
     }
 
-    public function test_it_can_get_all() {
+    public function test_it_can_get_all()
+    {
         $mock = $this->makeRepository();
         $this->builder->expects($this->once())->method('get');
         $mock->all();
     }
 
-    public function test_it_can_get_count() {
+    public function test_it_can_get_count()
+    {
         $mock = $this->makeRepository();
         $this->builder->expects($this->exactly(1))->method('count');
         $mock->count();
     }
 
-    public function test_it_can_get_find() {
+    public function test_it_can_get_find()
+    {
         $mock = $this->makeRepository();
         $this->builder->expects($this->exactly(1))->method('find');
         $this->expectException(NotFoundHttpException::class);
         $mock->find(1);
     }
 
-    public function test_it_can_get_findBy() {
+    public function test_it_can_get_findBy()
+    {
         $mock = $this->makeRepository();
         $this->builder->expects($this->exactly(1))->method('first');
         $this->builder->expects($this->exactly(1))->method('where');
@@ -119,19 +127,22 @@ class RepositoryTest extends AbstractTestCase
         $mock->findBy('id', 1);
     }
 
-    public function test_it_can_get_paginate() {
+    public function test_it_can_get_paginate()
+    {
         $mock = $this->makeRepository();
         $this->builder->expects($this->exactly(1))->method('paginate');
         $mock->paginate();
     }
 
-    public function test_it_can_push_criteria() {
+    public function test_it_can_push_criteria()
+    {
         $mock = $this->makeRepository();
         $mock->pushCriteria(new DummyCriteriaForMocking());
         $this->assertCount(1, $mock->getCriteria());
     }
 
-    public function test_it_can_skip_criteria() {
+    public function test_it_can_skip_criteria()
+    {
         $mock = $this->makeRepository();
         $criteria = $this->makeCriteria(['apply']);
         $criteria->expects($this->once())->method('apply')->willReturn($this->builder);
@@ -142,7 +153,8 @@ class RepositoryTest extends AbstractTestCase
         $mock->all();
     }
 
-    public function test_it_can_get_by_criteria() {
+    public function test_it_can_get_by_criteria()
+    {
         $mock = $this->makeRepository();
         $criteria1 = $this->makeCriteria(['apply']);
         $criteria1->expects($this->once())->method('apply')->willReturn($this->builder);
@@ -155,7 +167,8 @@ class RepositoryTest extends AbstractTestCase
         $this->assertCount(2, $mock->getCriteria());
     }
 
-    public function test_it_cannot_work_without_model() {
+    public function test_it_cannot_work_without_model()
+    {
         $this->expectException(RepositoryException::class);
         $this->makeRepository();
         $mock = new DummyRepositoryWithoutModel($this->app, new Collection());
@@ -163,7 +176,8 @@ class RepositoryTest extends AbstractTestCase
         $mock->all();
     }
 
-    public function test_it_cannot_work_without_eloquent() {
+    public function test_it_cannot_work_without_eloquent()
+    {
         $this->expectException(RepositoryException::class);
         $this->makeRepository();
         new DummyRepositoryWithWrongModel($this->app, new Collection());
@@ -172,7 +186,8 @@ class RepositoryTest extends AbstractTestCase
 
 class DummyCriteriaForMocking implements Criteria
 {
-    public function apply($query, \Znck\Repositories\Contracts\Repository $repository) {
+    public function apply($query, \Znck\Repositories\Contracts\Repository $repository)
+    {
         return $query;
     }
 }

@@ -1,13 +1,14 @@
 <?php
 
-if (!function_exists('repository')) {
+if (! function_exists('repository')) {
     /**
      * @param \Illuminate\Database\Eloquent\Model|string $model
      *
      * @return \Znck\Repositories\Repository
      */
-    function repository($model) {
-        if (!is_string($model)) {
+    function repository($model)
+    {
+        if (! is_string($model)) {
             $model = get_class($model);
         }
 
