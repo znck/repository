@@ -29,14 +29,8 @@ Don't use your Eloquent models directly into your controllers, instead create a 
   </a>
 </p>
 
-> ## Development Milestones
-- [x] Build a robust framework for repository implementation.
-- [x] Build a strong test suite.
-- [ ] Create documentation/wiki.
-- [ ] Build a collection of common criterion.
-
 ## Docs
-See [wiki](https://github.com/znck/repository/wiki).
+See [znck.me/repository](http://znck.me/repositiory).
 
 ## Change log
 
