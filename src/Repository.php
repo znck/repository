@@ -385,7 +385,14 @@ abstract class Repository implements Contracts\Repository
         return $this->rules;
     }
 
-    public function getUpdateRules(array $rules, array $attributes, Model $model) {
+    /**
+     * @param array $rules
+     * @param array $attributes
+     * @param Model $model
+     *
+     * @return array
+     */
+    public function getUpdateRules(array $rules, array $attributes, $model) {
         return $rules;
     }
 
