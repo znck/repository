@@ -357,7 +357,7 @@ abstract class Repository implements Contracts\Repository
             $this->validator = $this->app->make(Factory::class);
         }
 
-        $validator = $this->validator->make($this->getRules($attributes), $attributes);
+        $validator = $this->validator->make($this->getRules($attributes, $model), $attributes);
 
         if ($validator->fails()) {
             throw new ValidationException($validator);
@@ -367,12 +367,26 @@ abstract class Repository implements Contracts\Repository
     }
 
     /**
-     * @param array $attr
+     *
+     * @param array $attributes
+     * @param \Illuminate\Database\Eloquent\Model $model
      *
      * @return array
      */
-    public function getRules($attr = []): array {
+    public function getRules(array $attributes, Model $model = null): array {
+        if (is_null($model)) {
+            return $this->getCreateRules($attributes);
+        }
+
+        return $this->getUpdateRules($this->getCreateRules($attributes), $attributes, $model);
+    }
+
+    public function getCreateRules(array $attributes) {
         return $this->rules;
+    }
+
+    public function getUpdateRules(array $rules, array $attributes, Model $model) {
+        return $rules;
     }
 
     /**
