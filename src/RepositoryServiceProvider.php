@@ -12,10 +12,6 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     protected $defer = true;
 
-    public function boot() {
-        require_once __DIR__.'/helper.php';
-    }
-
     /**
      * Register the service provider.
      *
