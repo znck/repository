@@ -8,6 +8,14 @@
 interface Query extends UsesCriteria
 {
     /**
+     * Eager load.
+     *
+     * @param string|array $relations
+     *
+     * @return $this
+     */
+    public function with($relations);
+    /**
      * Get all items.
      *
      * @param array $columns

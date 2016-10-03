@@ -61,24 +61,22 @@ abstract class Repository implements Contracts\Repository
      */
     protected $skipValidation = false;
 
-    public function __construct(Application $app)
-    {
+    public function __construct(Application $app) {
         $this->app = $app;
         $this->criteria = new Collection();
         $this->makeModel();
     }
 
-    protected function makeModel()
-    {
+    protected function makeModel() {
         $class = $this->model;
 
-        if (! is_string($class) or ! class_exists($class)) {
+        if (!is_string($class) or !class_exists($class)) {
             throw new RepositoryException($class);
         }
 
         $this->instance = $this->app->make($class);
 
-        if (! $this->instance instanceof Model) {
+        if (!$this->instance instanceof Model) {
             throw new RepositoryException($class);
         }
 
@@ -90,12 +88,18 @@ abstract class Repository implements Contracts\Repository
      *
      * @return $this
      */
-    public function clearCriteria()
-    {
+    public function clearCriteria() {
         $this->criteria = new Collection();
 
         return $this;
     }
+
+    public function with($relations) {
+        $this->getQuery()->with($relations);
+
+        return $this;
+    }
+
 
     /**
      * Get all items.
@@ -104,8 +108,7 @@ abstract class Repository implements Contracts\Repository
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function all($columns = ['*'])
-    {
+    public function all($columns = ['*']) {
         $this->applyCriteria();
 
         return $this->getQuery()->get($columns);
@@ -118,8 +121,7 @@ abstract class Repository implements Contracts\Repository
      *
      * @return int
      */
-    public function count($columns = '*')
-    {
+    public function count($columns = '*') {
         $this->applyCriteria();
 
         return $this->getQuery()->count($columns);
@@ -129,25 +131,23 @@ abstract class Repository implements Contracts\Repository
      * Find a model by its primary key.
      *
      * @param string|int $id
-     * @param array      $columns
+     * @param array $columns
      *
      * @return Model
      */
-    public function find($id, $columns = ['*'])
-    {
+    public function find($id, $columns = ['*']) {
         $this->applyCriteria();
 
         $result = $this->getQuery()->find($id, $columns);
 
-        if (! $result instanceof Model) {
+        if (!$result instanceof Model) {
             throw new NotFoundHttpException();
         }
 
         return $result;
     }
 
-    protected function applyCriteria()
-    {
+    protected function applyCriteria() {
         if ($this->skipCriteria) {
             return $this;
         }
@@ -162,8 +162,7 @@ abstract class Repository implements Contracts\Repository
     /**
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
-    public function getQuery()
-    {
+    public function getQuery() {
         return $this->query;
     }
 
@@ -172,8 +171,7 @@ abstract class Repository implements Contracts\Repository
      *
      * @return \Illuminate\Support\Collection|Criteria[]
      */
-    public function getCriteria()
-    {
+    public function getCriteria() {
         return $this->criteria;
     }
 
@@ -181,17 +179,16 @@ abstract class Repository implements Contracts\Repository
      * Find a model by given key. (This would return first matching object).
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return Model
      */
-    public function findBy(string $key, $value)
-    {
+    public function findBy(string $key, $value) {
         $this->applyCriteria();
 
         $result = $this->getQuery()->where($key, $value)->first();
 
-        if (! $result instanceof Model) {
+        if (!$result instanceof Model) {
             throw new NotFoundHttpException();
         }
 
@@ -206,8 +203,7 @@ abstract class Repository implements Contracts\Repository
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function findMany(array $ids, $columns = ['*'])
-    {
+    public function findMany(array $ids, $columns = ['*']) {
         $this->applyCriteria();
 
         return $this->getQuery()
@@ -218,23 +214,21 @@ abstract class Repository implements Contracts\Repository
     /**
      * @return Model
      */
-    public function getModel(): Model
-    {
+    public function getModel(): Model {
         return $this->instance;
     }
 
     /**
      * Paginate the given query.
      *
-     * @param int      $perPage
-     * @param array    $columns
-     * @param string   $pageName
+     * @param int $perPage
+     * @param array $columns
+     * @param string $pageName
      * @param int|null $page
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
-    {
+    public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
         $this->applyCriteria();
 
         return $this->getQuery()->paginate($perPage, $columns, $pageName, $page);
@@ -247,8 +241,7 @@ abstract class Repository implements Contracts\Repository
      *
      * @return Criteria
      */
-    public function popCriteria(Criteria $criteria = null) : Criteria
-    {
+    public function popCriteria(Criteria $criteria = null) : Criteria {
         if (is_null($criteria)) {
             return $this->getCriteria()->pop();
         }
@@ -261,6 +254,8 @@ abstract class Repository implements Contracts\Repository
                 return $value;
             }
         }
+
+        return null;
     }
 
     /**
@@ -270,8 +265,7 @@ abstract class Repository implements Contracts\Repository
      *
      * @return $this
      */
-    public function pushCriteria(Criteria $criteria)
-    {
+    public function pushCriteria(Criteria $criteria) {
         $this->getCriteria()->push($criteria);
 
         return $this;
@@ -286,9 +280,8 @@ abstract class Repository implements Contracts\Repository
      *
      * @return \Laravel\Scout\Builder
      */
-    public function search(string $q)
-    {
-        if (! in_array(Searchable::class, class_uses_recursive($this->model))) {
+    public function search(string $q) {
+        if (!in_array(Searchable::class, class_uses_recursive($this->model))) {
             throw new Exception("{$this->model} should use ".Searchable::class);
         }
 
@@ -296,7 +289,7 @@ abstract class Repository implements Contracts\Repository
         /* @noinspection PhpUndefinedMethodInspection */
         $scout = $this->getModel()->search($q);
 
-        if (! $this->skipCriteria) {
+        if (!$this->skipCriteria) {
             foreach ($this->getCriteria() as $criteria) {
                 $criteria->apply($scout, $this);
             }
@@ -308,15 +301,14 @@ abstract class Repository implements Contracts\Repository
     /**
      * Paginate the given query into a simple paginator.
      *
-     * @param int      $perPage
-     * @param array    $columns
-     * @param string   $pageName
+     * @param int $perPage
+     * @param array $columns
+     * @param string $pageName
      * @param int|null $page
      *
      * @return \Illuminate\Contracts\Pagination\Paginator
      */
-    public function simplePaginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
-    {
+    public function simplePaginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
         $this->applyCriteria();
 
         return $this->getQuery()->simplePaginate($perPage, $columns, $pageName, $page);
@@ -327,8 +319,7 @@ abstract class Repository implements Contracts\Repository
      *
      * @return $this
      */
-    public function skipCriteria($skip = true)
-    {
+    public function skipCriteria($skip = true) {
         $this->skipCriteria = $skip;
 
         return $this;
@@ -341,8 +332,7 @@ abstract class Repository implements Contracts\Repository
      *
      * @return \Znck\Repositories\Contracts\Repository
      */
-    public function skipValidation($skip = true)
-    {
+    public function skipValidation($skip = true) {
         $this->skipValidation = $skip;
 
         return $this;
@@ -358,13 +348,12 @@ abstract class Repository implements Contracts\Repository
      *
      * @return $this
      */
-    public function validate(array $attributes, Model $model = null)
-    {
+    public function validate(array $attributes, Model $model = null) {
         if ($this->skipValidation) {
             return $this;
         }
 
-        if (! $this->validator) {
+        if (!$this->validator) {
             $this->validator = $this->app->make(Factory::class);
         }
 
@@ -380,8 +369,7 @@ abstract class Repository implements Contracts\Repository
     /**
      * @return array
      */
-    public function getRules(): array
-    {
+    public function getRules(): array {
         return $this->rules;
     }
 
@@ -389,21 +377,19 @@ abstract class Repository implements Contracts\Repository
      * Get result of the query.
      *
      * @param string|array|\Closure $column
-     * @param string                $operator
-     * @param mixed                 $value
-     * @param string                $boolean
+     * @param string $operator
+     * @param mixed $value
+     * @param string $boolean
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function where($column, $operator = null, $value = null, $boolean = 'and')
-    {
+    public function where($column, $operator = null, $value = null, $boolean = 'and') {
         $this->applyCriteria();
 
         return $this->getQuery()->where($column, $operator, $value, $boolean)->get();
     }
 
-    public static function register(array $map)
-    {
+    public static function register(array $map) {
         self::$repositories += $map;
     }
 
@@ -412,8 +398,7 @@ abstract class Repository implements Contracts\Repository
      *
      * @return \Znck\Repositories\Contracts\Repository
      */
-    public function refresh()
-    {
+    public function refresh() {
         $this->query = $this->getModel()->newQuery();
 
         return $this;
