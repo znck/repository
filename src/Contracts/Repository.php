@@ -17,8 +17,8 @@ interface Repository extends Search
      * Update the model in the database.
      *
      * @param Model|string|int $id
-     * @param array            $attributes
-     * @param array            $options
+     * @param array $attributes
+     * @param array $options
      *
      * @return Model
      */
@@ -58,4 +58,11 @@ interface Repository extends Search
      * @return $this
      */
     public function refresh();
+
+    /**
+     * Get underlying eloquent model.
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function getModel() : Model;
 }
