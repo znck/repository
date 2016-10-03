@@ -12,7 +12,10 @@
   "autoload": {
     "psr-4": {
       "Znck\\Repositories\\": "src/"
-    }
+    },
+    "files": [
+      "src/helper.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {
