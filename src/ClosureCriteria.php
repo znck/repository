@@ -2,7 +2,7 @@
 
 use Closure;
 use Znck\Repositories\Contracts\Criteria;
-use Znck\Repositories\Contracts\Repository;
+use Znck\Repositories\Contracts\Repository as RepositoryContract;
 
 class ClosureCriteria implements Criteria
 {
@@ -21,11 +21,11 @@ class ClosureCriteria implements Criteria
      * Apply criteria in query repository.
      *
      * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder|\Laravel\Scout\Builder $model
-     * @param Repository $repository
+     * @param RepositoryContract $repository
      *
      * @return mixed|void
      */
-    public function apply($model, Repository $repository) {
+    public function apply($model, RepositoryContract $repository) {
         $callback = $this->callable;
 
         $callback($model, $repository);
