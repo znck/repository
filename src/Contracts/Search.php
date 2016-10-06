@@ -12,7 +12,9 @@ interface Search extends Query
      *
      * @param string $q
      *
-     * @return \Laravel\Scout\Builder
+     * @param callable|\Closure $callback
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function search(string $q);
+    public function search(string $q, $callback = null);
 }

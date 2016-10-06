@@ -1,5 +1,6 @@
 <?php namespace Znck\Repositories;
 
+use Closure;
 use Exception;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Contracts\Validation\Factory;
@@ -52,6 +53,13 @@ abstract class Repository implements Contracts\Repository
     protected $rules = [];
 
     /**
+     * Eager relations.
+     *
+     * @var array
+     */
+    protected $with = [];
+
+    /**
      * @var bool
      */
     protected $skipCriteria = false;
@@ -95,7 +103,7 @@ abstract class Repository implements Contracts\Repository
     }
 
     public function with($relations) {
-        $this->getQuery()->with($relations);
+        $this->with = array_merge($this->with, (is_array($relations) ? $relations : (array)$relations));
 
         return $this;
     }
@@ -148,12 +156,14 @@ abstract class Repository implements Contracts\Repository
     }
 
     protected function applyCriteria() {
+        $this->getQuery()->with($this->with);
+
         if ($this->skipCriteria) {
             return $this;
         }
 
         foreach ($this->getCriteria() as $criteria) {
-            $criteria->apply($this->query, $this);
+            $criteria->apply($this->getQuery(), $this);
         }
 
         return $this;
@@ -275,12 +285,12 @@ abstract class Repository implements Contracts\Repository
      * Find models matching query string.
      *
      * @param string $q
+     * @param callable|\Closure $callback
      *
+     * @return \Illuminate\Database\Eloquent\Collection
      * @throws \Exception
-     *
-     * @return \Laravel\Scout\Builder
      */
-    public function search(string $q) {
+    public function search(string $q, $callback = null) {
         if (!in_array(Searchable::class, class_uses_recursive($this->model))) {
             throw new Exception("{$this->model} should use ".Searchable::class);
         }
@@ -295,7 +305,13 @@ abstract class Repository implements Contracts\Repository
             }
         }
 
-        return $scout;
+        if (is_callable($callback)) {
+            call_user_func($callback, [$scout, $this]);
+        } elseif ($callback instanceof Closure) {
+            $callback($scout, $this);
+        }
+
+        return $scout->get()->load($this->with);
     }
 
     /**
