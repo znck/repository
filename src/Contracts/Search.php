@@ -14,7 +14,7 @@ interface Search extends Query
      *
      * @param callable|\Closure $callback
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return $this
      */
     public function search(string $q, $callback = null);
 }

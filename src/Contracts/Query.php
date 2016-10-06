@@ -15,6 +15,7 @@ interface Query extends UsesCriteria
      * @return $this
      */
     public function with($relations);
+
     /**
      * Get all items.
      *
@@ -25,10 +26,19 @@ interface Query extends UsesCriteria
     public function all($columns = ['*']);
 
     /**
+     * Get all items.
+     *
+     * @param array $columns
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function first($columns = ['*']);
+
+    /**
      * Find a model by its primary key.
      *
      * @param string|int $id
-     * @param array      $columns
+     * @param array $columns
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
@@ -38,7 +48,7 @@ interface Query extends UsesCriteria
      * Find a model by given key. (This would return first matching object).
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
@@ -57,9 +67,9 @@ interface Query extends UsesCriteria
     /**
      * Paginate the given query.
      *
-     * @param int      $perPage
-     * @param array    $columns
-     * @param string   $pageName
+     * @param int $perPage
+     * @param array $columns
+     * @param string $pageName
      * @param int|null $page
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
@@ -69,9 +79,9 @@ interface Query extends UsesCriteria
     /**
      * Paginate the given query into a simple paginator.
      *
-     * @param int      $perPage
-     * @param array    $columns
-     * @param string   $pageName
+     * @param int $perPage
+     * @param array $columns
+     * @param string $pageName
      * @param int|null $page
      *
      * @return \Illuminate\Contracts\Pagination\Paginator
@@ -91,9 +101,9 @@ interface Query extends UsesCriteria
      * Get result of the query.
      *
      * @param string|array|\Closure $column
-     * @param string                $operator
-     * @param mixed                 $value
-     * @param string                $boolean
+     * @param string $operator
+     * @param mixed $value
+     * @param string $boolean
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
