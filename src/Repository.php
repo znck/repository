@@ -346,7 +346,7 @@ abstract class Repository implements Contracts\Repository
         }
 
         if (is_callable($callback)) {
-            call_user_func($callback, [$this->scout, $this]);
+            call_user_func_array($callback, [$this->scout, $this]);
         } elseif ($callback instanceof Closure) {
             $callback($this->scout, $this);
         }
