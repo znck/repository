@@ -21,14 +21,14 @@ trait RepositoryHelper
 
     public function commitTransaction() {
         if (!$this->inTransaction) {
-            $this->app->make('db')->commitTransaction();
+            $this->app->make('db')->commit();
             $this->inTransaction = false;
         }
     }
 
     public function rollbackTransaction() {
         if ($this->inTransaction) {
-            $this->app->make('db')->rollbackTransaction();
+            $this->app->make('db')->rollback();
             $this->inTransaction = false;
         }
     }
