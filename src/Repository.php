@@ -79,7 +79,10 @@ abstract class Repository implements Contracts\Repository
         $this->app = $app;
         $this->criteria = new Collection();
         $this->makeModel();
+        $this->boot();
     }
+
+    public function boot() {}
 
     protected function makeModel() {
         $class = $this->model;
@@ -395,6 +398,7 @@ abstract class Repository implements Contracts\Repository
     public function refresh() {
         $this->query = $this->getModel()->newQuery();
         $this->scout = null;
+        $this->boot();
 
         return $this;
     }
