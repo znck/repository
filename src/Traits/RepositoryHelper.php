@@ -14,22 +14,19 @@ trait RepositoryHelper
 {
     protected $inTransaction = false;
 
-    public function startTransaction()
-    {
+    public function startTransaction() {
         $this->app->make('db')->beginTransaction();
         $this->inTransaction = true;
     }
 
-    public function commitTransaction()
-    {
-        if (! $this->inTransaction) {
+    public function commitTransaction() {
+        if (!$this->inTransaction) {
             $this->app->make('db')->commitTransaction();
             $this->inTransaction = false;
         }
     }
 
-    public function rollbackTransaction()
-    {
+    public function rollbackTransaction() {
         if ($this->inTransaction) {
             $this->app->make('db')->rollbackTransaction();
             $this->inTransaction = false;
@@ -43,8 +40,7 @@ trait RepositoryHelper
      *
      * @return Model
      */
-    public function create(array $attributes)
-    {
+    public function create(array $attributes) {
         try {
             $this->validate($attributes);
         } catch (ValidationException $e) {
@@ -73,16 +69,15 @@ trait RepositoryHelper
      * Update the model in the database.
      *
      * @param Model|string|int $id
-     * @param array            $attributes
-     * @param array            $options
+     * @param array $attributes
+     * @param array $options
      *
      * @return Model
      */
-    public function update($id, array $attributes, array $options = [])
-    {
+    public function update($id, array $attributes, array $options = []) {
         /* @var Model $instance */
         try {
-            $instance = $this->app->make(static::class)->find($id);
+            $instance = $id instanceof Model ? $id : $this->app->make(static::class)->find($id);
         } catch (NotFoundResourceException $e) {
             throw new UpdateResourceException('The resource you are trying to update does not exist.');
         }
@@ -101,6 +96,10 @@ trait RepositoryHelper
 
         if ($status !== true) {
             $this->rollbackTransaction();
+
+            if ($status !== true and !$instance->isDirty()) {
+                new UpdateResourceException('Nothing updated since last time.');
+            }
             throw new UpdateResourceException('Server broke down while processing your input.');
         }
 
@@ -116,11 +115,10 @@ trait RepositoryHelper
      *
      * @return bool|null
      */
-    public function delete($id)
-    {
+    public function delete($id) {
         /* @var Model $instance */
         try {
-            $instance = $this->app->make(static::class)->find($id);
+            $instance = $id instanceof Model ? $id : $this->app->make(static::class)->find($id);
         } catch (NotFoundResourceException $e) {
             throw new DeleteResourceException('The resource you are trying to update does not exist.');
         }
@@ -132,6 +130,8 @@ trait RepositoryHelper
                 $this->rollbackTransaction();
                 throw new DeleteResourceException('Cannot delete this resource.');
             }
+
+            return $status;
         }
 
         if ($status = $instance->delete()) {
