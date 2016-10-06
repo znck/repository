@@ -82,7 +82,8 @@ abstract class Repository implements Contracts\Repository
         $this->boot();
     }
 
-    public function boot() {}
+    public function boot() {
+    }
 
     protected function makeModel() {
         $class = $this->model;
@@ -194,7 +195,7 @@ abstract class Repository implements Contracts\Repository
      */
     public function find($id, $columns = ['*']) {
         if ($this->isSearching()) {
-            return $this->scout->where('id', $id)->first()->load($this->with);
+            return $this->scout->where($this->getModel()->getKeyName(), $id)->first()->load($this->with);
         }
 
         $this->applyCriteria();
