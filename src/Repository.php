@@ -290,8 +290,11 @@ abstract class Repository implements Contracts\Repository
      */
     public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
         if ($this->isSearching()) {
+            /** @var \Illuminate\Pagination\LengthAwarePaginator $paginator */
             $paginator = $this->scout->paginate($perPage, $columns, $perPage);
-            $paginator->getCollection()->load($this->with);
+            /** @var \Illuminate\Database\Eloquent\Collection $collection */
+            $collection = $paginator->getCollection();
+            $collection->load($this->with);
 
             return $paginator;
         }
@@ -312,8 +315,11 @@ abstract class Repository implements Contracts\Repository
      */
     public function simplePaginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
         if ($this->isSearching()) {
+            /** @var \Illuminate\Pagination\Paginator $paginator */
             $paginator = $this->scout->simplePaginate($perPage, $columns, $perPage);
-            $paginator->getCollection()->load($this->with);
+            /** @var \Illuminate\Database\Eloquent\Collection $collection */
+            $collection = $paginator->getCollection();
+            $collection->load($this->with);
 
             return $paginator;
         }
@@ -490,7 +496,7 @@ abstract class Repository implements Contracts\Repository
      * @return array
      */
     public function getUpdateRules(array $rules, array $attributes, $model) {
-        return $rules;
+        return array_only($rules, array_keys($attributes));
     }
 
     /**
