@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use Laravel\Scout\Searchable;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Znck\Repositories\Contracts\Criteria;
+use Znck\Repositories\Exceptions\NotFoundResourceException;
 use Znck\Repositories\Exceptions\RepositoryException;
 use Znck\Repositories\Exceptions\UnsupportedScoutFeature;
 
@@ -116,9 +116,16 @@ abstract class Repository implements Contracts\Repository
             return $this;
         }
 
-        foreach ($this->getCriteria() as $criteria) {
-            $criteria->apply($this->getQuery(), $this);
+        if ($this->isSearching()) {
+            foreach ($this->getCriteria() as $criteria) {
+                $criteria->apply($this->scout, $this);
+            }
+        } else {
+            foreach ($this->getCriteria() as $criteria) {
+                $criteria->apply($this->getQuery(), $this);
+            }
         }
+
 
         return $this;
     }
@@ -159,11 +166,11 @@ abstract class Repository implements Contracts\Repository
      * @throws \Znck\Repositories\Exceptions\UnsupportedScoutFeature
      */
     public function count($columns = '*') {
+        $this->applyCriteria();
+
         if ($this->isSearching()) {
             throw new UnsupportedScoutFeature('scout: count() is not supported!');
         }
-
-        $this->applyCriteria();
 
         return $this->getQuery()->count($columns);
     }
@@ -176,11 +183,11 @@ abstract class Repository implements Contracts\Repository
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function all($columns = ['*']) {
+        $this->applyCriteria();
+
         if ($this->isSearching()) {
             return $this->scout->get()->load($this->with);
         }
-
-        $this->applyCriteria();
 
         return $this->getQuery()->get($columns);
     }
@@ -194,16 +201,16 @@ abstract class Repository implements Contracts\Repository
      * @return Model
      */
     public function find($id, $columns = ['*']) {
+        $this->applyCriteria();
+
         if ($this->isSearching()) {
             return $this->scout->where($this->getModel()->getKeyName(), $id)->first()->load($this->with);
         }
 
-        $this->applyCriteria();
-
         $result = $this->getQuery()->find($id, $columns);
 
         if (!$result instanceof Model) {
-            throw new NotFoundHttpException();
+            throw new NotFoundResourceException('Not found.');
         }
 
         return $result;
@@ -218,16 +225,16 @@ abstract class Repository implements Contracts\Repository
      * @return Model
      */
     public function findBy(string $key, $value) {
+        $this->applyCriteria();
+
         if ($this->isSearching()) {
             return $this->scout->where($key, $value)->get()->load($this->with);
         }
 
-        $this->applyCriteria();
-
         $result = $this->getQuery()->where($key, $value)->first();
 
         if (!$result instanceof Model) {
-            throw new NotFoundHttpException();
+            throw new NotFoundResourceException('Not found.');
         }
 
         return $result;
@@ -240,18 +247,18 @@ abstract class Repository implements Contracts\Repository
      * @param array $columns
      *
      * @return \Illuminate\Database\Eloquent\Collection
-     *
      * @throws \Znck\Repositories\Exceptions\UnsupportedScoutFeature
      */
     public function findMany(array $ids, $columns = ['*']) {
+        $this->applyCriteria();
+
         if ($this->isSearching()) {
             throw new UnsupportedScoutFeature('scout: wherein is not supported!');
         }
-        $this->applyCriteria();
 
         return $this->getQuery()
-            ->whereIn($this->getModel()->getKeyName(), $ids)
-            ->get();
+                    ->whereIn($this->getModel()->getKeyName(), $ids)
+                    ->get();
     }
 
     /**
@@ -269,11 +276,11 @@ abstract class Repository implements Contracts\Repository
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function first($columns = ['*']) {
+        $this->applyCriteria();
+
         if ($this->isSearching()) {
             return $this->scout->first()->load($this->with);
         }
-
-        $this->applyCriteria();
 
         return $this->getQuery()->first($columns);
     }
@@ -289,6 +296,8 @@ abstract class Repository implements Contracts\Repository
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
+        $this->applyCriteria();
+
         if ($this->isSearching()) {
             /** @var \Illuminate\Pagination\LengthAwarePaginator $paginator */
             $paginator = $this->scout->paginate($perPage, $columns, $perPage);
@@ -298,7 +307,6 @@ abstract class Repository implements Contracts\Repository
 
             return $paginator;
         }
-        $this->applyCriteria();
 
         return $this->getQuery()->paginate($perPage, $columns, $pageName, $page);
     }
@@ -314,16 +322,17 @@ abstract class Repository implements Contracts\Repository
      * @return \Illuminate\Contracts\Pagination\Paginator
      */
     public function simplePaginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
+        $this->applyCriteria();
+
         if ($this->isSearching()) {
             /** @var \Illuminate\Pagination\Paginator $paginator */
-            $paginator = $this->scout->simplePaginate($perPage, $columns, $perPage);
+            $paginator = $this->scout->paginate($perPage, $columns, $perPage);
             /** @var \Illuminate\Database\Eloquent\Collection $collection */
             $collection = $paginator->getCollection();
             $collection->load($this->with);
 
             return $paginator;
         }
-        $this->applyCriteria();
 
         return $this->getQuery()->simplePaginate($perPage, $columns, $pageName, $page);
     }
@@ -344,12 +353,6 @@ abstract class Repository implements Contracts\Repository
 
         /* @noinspection PhpUndefinedMethodInspection */
         $this->scout = $this->getModel()->search($q);
-
-        if (!$this->skipCriteria) {
-            foreach ($this->getCriteria() as $criteria) {
-                $criteria->apply($this->scout, $this);
-            }
-        }
 
         if (is_callable($callback)) {
             call_user_func_array($callback, [$this->scout, $this]);
@@ -441,7 +444,6 @@ abstract class Repository implements Contracts\Repository
      * @param Model $model
      *
      * @throws \Illuminate\Validation\ValidationException
-     *
      * @return $this
      */
     public function validate(array $attributes, Model $model = null) {
@@ -470,7 +472,6 @@ abstract class Repository implements Contracts\Repository
     }
 
     /**
-     *
      * @param array $attributes
      * @param \Illuminate\Database\Eloquent\Model $model
      *
