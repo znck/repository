@@ -1,7 +1,6 @@
 <?php namespace Znck\Repositories;
 
 use Closure;
-use Exception;
 use Illuminate\Contracts\Container\Container as Application;
 use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +9,9 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Scout\Searchable;
 use Znck\Repositories\Contracts\Criteria;
 use Znck\Repositories\Exceptions\NotFoundResourceException;
+use Znck\Repositories\Exceptions\RelationNotFoundException;
 use Znck\Repositories\Exceptions\RepositoryException;
+use Znck\Repositories\Exceptions\ScoutNotFoundException;
 use Znck\Repositories\Exceptions\UnsupportedScoutFeature;
 
 abstract class Repository implements Contracts\Repository
@@ -66,6 +67,13 @@ abstract class Repository implements Contracts\Repository
     protected $with = [];
 
     /**
+     * Relation name.
+     *
+     * @var string
+     */
+    protected $relation = null;
+
+    /**
      * @var bool
      */
     protected $skipCriteria = false;
@@ -78,7 +86,6 @@ abstract class Repository implements Contracts\Repository
     public function __construct(Application $app) {
         $this->app = $app;
         $this->criteria = new Collection();
-        $this->makeModel();
         $this->boot();
     }
 
@@ -98,7 +105,9 @@ abstract class Repository implements Contracts\Repository
             throw new RepositoryException($class);
         }
 
-        $this->query = $this->instance->newQuery();
+        $this->query = is_null($this->relation)
+            ? $this->instance->newQuery()
+            : call_user_func([$this->instance, $this->relation]);
     }
 
     public static function register(array $map) {
@@ -130,10 +139,24 @@ abstract class Repository implements Contracts\Repository
         return $this;
     }
 
+    public function useRelation(string $relation) {
+        if (!method_exists($this->getModel(), $relation)) {
+            throw new RelationNotFoundException($this->getModel(), $relation);
+        }
+
+        $this->relation = $relation;
+
+        return $this;
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
     public function getQuery() {
+        if (is_null($this->query)) {
+            $this->makeModel();
+        }
+
         return $this->query;
     }
 
@@ -265,6 +288,10 @@ abstract class Repository implements Contracts\Repository
      * @return Model
      */
     public function getModel(): Model {
+        if (is_null($this->instance)) {
+            $this->makeModel();
+        }
+
         return $this->instance;
     }
 
@@ -348,7 +375,11 @@ abstract class Repository implements Contracts\Repository
      */
     public function search(string $q, $callback = null) {
         if (!in_array(Searchable::class, class_uses_recursive($this->model))) {
-            throw new Exception("{$this->model} should use ".Searchable::class);
+            throw new ScoutNotFoundException($this->model);
+        }
+
+        if (!is_null($this->relation)) {
+            throw new UnsupportedScoutFeature('Scout: cannot search relations.');
         }
 
         /* @noinspection PhpUndefinedMethodInspection */
