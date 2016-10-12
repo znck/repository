@@ -9,7 +9,6 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Scout\Searchable;
 use Znck\Repositories\Contracts\Criteria;
 use Znck\Repositories\Exceptions\NotFoundResourceException;
-use Znck\Repositories\Exceptions\RelationNotFoundException;
 use Znck\Repositories\Exceptions\RepositoryException;
 use Znck\Repositories\Exceptions\ScoutNotFoundException;
 use Znck\Repositories\Exceptions\UnsupportedScoutFeature;
@@ -67,13 +66,6 @@ abstract class Repository implements Contracts\Repository
     protected $with = [];
 
     /**
-     * Relation name.
-     *
-     * @var string
-     */
-    protected $relation = null;
-
-    /**
      * @var bool
      */
     protected $skipCriteria = false;
@@ -105,9 +97,7 @@ abstract class Repository implements Contracts\Repository
             throw new RepositoryException($class);
         }
 
-        $this->query = is_null($this->relation)
-            ? $this->instance->newQuery()
-            : call_user_func([$this->instance, $this->relation]);
+        $this->query = $this->instance->newQuery();
     }
 
     public static function register(array $map) {
@@ -139,24 +129,10 @@ abstract class Repository implements Contracts\Repository
         return $this;
     }
 
-    public function useRelation(string $relation, $model) {
-        if ($model instanceof Model) {
-            $this->relation = $model->$relation();
-        } elseif ($model instanceof \Illuminate\Database\Eloquent\Collection) {
-            // Some Other Day.
-        }
-
-        return $this;
-    }
-
     /**
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
     public function getQuery() {
-        if (!is_null($this->relation)) {
-            return $this->relation;
-        }
-
         if (is_null($this->query)) {
             $this->makeModel();
         }
@@ -380,10 +356,6 @@ abstract class Repository implements Contracts\Repository
     public function search(string $q, $callback = null) {
         if (!in_array(Searchable::class, class_uses_recursive($this->model))) {
             throw new ScoutNotFoundException($this->model);
-        }
-
-        if (!is_null($this->relation)) {
-            throw new UnsupportedScoutFeature('Scout: cannot search relations.');
         }
 
         /* @noinspection PhpUndefinedMethodInspection */

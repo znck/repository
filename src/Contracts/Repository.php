@@ -66,14 +66,4 @@ interface Repository extends Search
      * @return \Illuminate\Database\Eloquent\Model
      */
     public function getModel() : Model;
-
-    /**
-     * Use relation for query.
-     *
-     * @param string $relation
-     * @param Model|Collection $model
-     *
-     * @return $this
-     */
-    public function useRelation(string $relation, $model);
 }
