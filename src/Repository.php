@@ -327,7 +327,7 @@ abstract class Repository implements Contracts\Repository
 
         if ($this->isSearching()) {
             /** @var \Illuminate\Pagination\LengthAwarePaginator $paginator */
-            $paginator = $this->scout->paginate($perPage, $columns, $perPage);
+            $paginator = $this->scout->paginate($perPage, $pageName, $perPage);
             /** @var \Illuminate\Database\Eloquent\Collection $collection */
             $collection = $paginator->getCollection();
             $collection->load($this->with);
@@ -353,7 +353,7 @@ abstract class Repository implements Contracts\Repository
 
         if ($this->isSearching()) {
             /** @var \Illuminate\Pagination\Paginator $paginator */
-            $paginator = $this->scout->paginate($perPage, $columns, $perPage);
+            $paginator = $this->scout->paginate($perPage, $pageName, $perPage);
             /** @var \Illuminate\Database\Eloquent\Collection $collection */
             $collection = $paginator->getCollection();
             $collection->load($this->with);
