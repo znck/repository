@@ -139,12 +139,12 @@ abstract class Repository implements Contracts\Repository
         return $this;
     }
 
-    public function useRelation(string $relation) {
-        if (!method_exists($this->getModel(), $relation)) {
-            throw new RelationNotFoundException($this->getModel(), $relation);
+    public function useRelation(string $relation, $model) {
+        if ($model instanceof Model) {
+            $this->relation = $model->$relation();
+        } elseif ($model instanceof \Illuminate\Database\Eloquent\Collection) {
+            // Some Other Day.
         }
-
-        $this->relation = $relation;
 
         return $this;
     }
@@ -153,6 +153,10 @@ abstract class Repository implements Contracts\Repository
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
     public function getQuery() {
+        if (!is_null($this->relation)) {
+            return $this->relation;
+        }
+
         if (is_null($this->query)) {
             $this->makeModel();
         }

@@ -1,5 +1,6 @@
 <?php namespace Znck\Repositories\Contracts;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 interface Repository extends Search
@@ -70,8 +71,9 @@ interface Repository extends Search
      * Use relation for query.
      *
      * @param string $relation
+     * @param Model|Collection $model
      *
      * @return $this
      */
-    public function useRelation(string $relation);
+    public function useRelation(string $relation, $model);
 }
