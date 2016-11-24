@@ -12,7 +12,8 @@ test:
   override:
     - php vendor/bin/phpunit
     - php vendor/bin/coveralls -v
-
+  post:
+    - curl -sSL https://download.sourceclear.com/ci.sh | sh
 general:
   artifacts:
     - "build"
