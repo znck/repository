@@ -6,9 +6,9 @@
 .gitignore          export-ignore
 .php_cs             export-ignore
 .styleci.yml        export-ignore
-CHANGELOG.md        export-ignore
+.github             export-ignore
 circle.yml          export-ignore
-CONDUCT.md          export-ignore
-CONTRIBUTING.md     export-ignore
+sereno.yml          export-ignore
+sereno.*.yml        export-ignore
 cover.png           export-ignore
 phpunit.xml         export-ignore

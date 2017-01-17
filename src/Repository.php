@@ -8,14 +8,19 @@ use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use Laravel\Scout\Searchable;
 use Znck\Repositories\Contracts\Criteria;
+use Znck\Repositories\Contracts\Validating;
+use Znck\Repositories\Contracts\HasTransactions;
 use Znck\Repositories\Exceptions\NotFoundResourceException;
 use Znck\Repositories\Exceptions\RepositoryException;
 use Znck\Repositories\Exceptions\ScoutNotFoundException;
 use Znck\Repositories\Exceptions\UnsupportedScoutFeature;
 
-abstract class Repository implements Contracts\Repository
+abstract class Repository implements Contracts\Repository, Contracts\Validating, Contracts\HasTransactions, Contracts\RepositoryExtras
 {
+    use Traits\RepositoryHelper;
+
     public static $repositories = [];
+
     /**
      * @var Application
      */
@@ -47,18 +52,6 @@ abstract class Repository implements Contracts\Repository
     protected $scout;
 
     /**
-     * @var \Illuminate\Contracts\Validation\Factory
-     */
-    protected $validator;
-
-    /**
-     * Validation rules.
-     *
-     * @var array
-     */
-    protected $rules = [];
-
-    /**
      * Eager relations.
      *
      * @var array
@@ -70,11 +63,6 @@ abstract class Repository implements Contracts\Repository
      */
     protected $skipCriteria = false;
 
-    /**
-     * @var bool
-     */
-    protected $skipValidation = false;
-
     public function __construct(Application $app) {
         $this->app = $app;
         $this->criteria = new Collection();
@@ -82,6 +70,7 @@ abstract class Repository implements Contracts\Repository
     }
 
     public function boot() {
+
     }
 
     protected function makeModel() {
@@ -429,82 +418,6 @@ abstract class Repository implements Contracts\Repository
         $this->skipCriteria = $skip;
 
         return $this;
-    }
-
-    /**
-     * Skip validation.
-     *
-     * @param bool $skip
-     *
-     * @return \Znck\Repositories\Contracts\Repository
-     */
-    public function skipValidation($skip = true) {
-        $this->skipValidation = $skip;
-
-        return $this;
-    }
-
-    /**
-     * Validate attributes.
-     *
-     * @param array $attributes
-     * @param Model $model
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     * @return $this
-     */
-    public function validate(array $attributes, Model $model = null) {
-        if ($this->skipValidation) {
-            return $this;
-        }
-
-        if (!$this->validator) {
-            $this->validator = $this->app->make(Factory::class);
-        }
-
-        $validator = $this->validator->make(
-            $this->prepareAttributes($attributes),
-            $this->getRules($attributes, $model)
-        );
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-
-        return $this;
-    }
-
-    public function prepareAttributes(array $attributes) {
-        return $attributes;
-    }
-
-    /**
-     * @param array $attributes
-     * @param \Illuminate\Database\Eloquent\Model $model
-     *
-     * @return array
-     */
-    public function getRules(array $attributes, Model $model = null): array {
-        if (is_null($model)) {
-            return $this->getCreateRules($attributes);
-        }
-
-        return $this->getUpdateRules($this->getCreateRules($attributes), $attributes, $model);
-    }
-
-    public function getCreateRules(array $attributes) {
-        return $this->rules;
-    }
-
-    /**
-     * @param array $rules
-     * @param array $attributes
-     * @param Model $model
-     *
-     * @return array
-     */
-    public function getUpdateRules(array $rules, array $attributes, $model) {
-        return array_only($rules, array_keys($attributes));
     }
 
     /**

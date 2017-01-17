@@ -1,0 +1,23 @@
+siteName: Repository
+siteDescription: Eloquent + Repository = Simpler Controllers & Freedom
+docs_edit_url: https://github.com/znck/repository/edit/master/docs
+docs_repo: https://github.com/znck/repository
+docs_issues: https://github.com/znck/repository/issues
+
+sereno:
+    url: http://znck.me/repository
+    public: .github/sereno/public
+    extensions:
+      - Sereno\Extensions\DocsExtension
+    directory:
+      - .github/sereno/content
+    views:
+      - .github/sereno/resources/views/
+    ignore:
+      - docs/README.md
+
+docs:
+    directory: docs
+    url_prefix: /
+    index: index
+    default: introduction

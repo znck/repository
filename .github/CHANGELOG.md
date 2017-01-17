@@ -1,8 +1,6 @@
-# Change-log
+# Changelog
 
-All Notable changes to `repository` will be documented in this file.
-
-## [Unpublished]
+All Notable changes to `repository` will be documented in this file. Checkout [what's new since last release][Unpublished].
 
 ## [0.2.2] - 2016-04-04
 
@@ -14,5 +12,5 @@ All Notable changes to `repository` will be documented in this file.
 ### Deprecated
 - Method `model` is deprecated and will be removed from 1.0.0+ versions. Instead of `model` method use `protected $modelClass` property to define model class.
 
-[Unpublished]: https://github.com/znck/plug/compare/v0.2.2...HEAD
-[0.2.2]: https://github.com/znck/plug/compare/v0.2.2...v0.2.1
+[Unpublished]: https://github.com/znck/repository/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/znck/repository/compare/v0.2.2...v0.2.1

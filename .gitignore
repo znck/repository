@@ -1,5 +1,8 @@
 .php_cs.cache
 /build/
+/_cache
+/.github/sereno/public
+/node_modules
 
 # Created by https://www.gitignore.io/api/phpstorm,osx,composer
 
