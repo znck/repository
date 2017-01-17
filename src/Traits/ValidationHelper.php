@@ -79,7 +79,7 @@ trait ValidationHelper {
      *
      * @return array
      */
-    public function getRules(array $attributes, Model $model = null): array {
+    public function getRules(array $attributes = [], Model $model = null): array {
         if (is_null($model)) {
             return $this->getCreateRules($attributes);
         }
