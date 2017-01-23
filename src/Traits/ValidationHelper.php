@@ -3,6 +3,8 @@
 namespace Znck\Repositories\Traits;
 
 use Znck\Repositories\Contracts\Model;
+use Illuminate\Contracts\Validation\Factory;
+use Illuminate\Validation\ValidationException;
 
 trait ValidationHelper {
     /**

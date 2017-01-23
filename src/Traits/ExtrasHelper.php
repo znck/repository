@@ -3,6 +3,11 @@
 namespace Znck\Repositories\Traits;
 use Znck\Repositories\Contracts\Validating;
 use Znck\Repositories\Contracts\HasTransactions;
+use Znck\Repositories\Exceptions\StoreResourceException;
+use Znck\Repositories\Exceptions\UpdateResourceException;
+use Znck\Repositories\Exceptions\DeleteResourceException;
+use Znck\Repositories\Exceptions\NotFoundResourceException;
+use Illuminate\Validation\ValidationException;
 
 trait ExtrasHelper {
     /**
