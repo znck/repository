@@ -1,6 +1,7 @@
 <?php
 
 namespace Znck\Repositories\Traits;
+use Illuminate\Database\Eloquent\Model;
 use Znck\Repositories\Contracts\Validating;
 use Znck\Repositories\Contracts\HasTransactions;
 use Znck\Repositories\Exceptions\StoreResourceException;
@@ -15,7 +16,7 @@ trait ExtrasHelper {
      *
      * @param array $attributes
      *
-     * @return Model
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function create(array $attributes) {
         if ($this instanceof Validating) {
@@ -48,14 +49,13 @@ trait ExtrasHelper {
     /**
      * Update the model in the database.
      *
-     * @param Model|string|int $id
+     * @param \Illuminate\Database\Eloquent\Model|string|int $id
      * @param array $attributes
      * @param array $options
      *
-     * @return Model
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function update($id, array $attributes, array $options = []) {
-        /* @var Model $instance */
         try {
             $instance = $id instanceof Model ? $id : $this->app->make(static::class)->find($id);
         } catch (NotFoundResourceException $e) {

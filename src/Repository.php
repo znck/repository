@@ -2,14 +2,12 @@
 
 use Closure;
 use Illuminate\Contracts\Container\Container as Application;
-use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Validation\ValidationException;
 use Laravel\Scout\Searchable;
 use Znck\Repositories\Contracts\Criteria;
-use Znck\Repositories\Contracts\Validating;
 use Znck\Repositories\Contracts\HasTransactions;
+use Znck\Repositories\Contracts\Validating;
 use Znck\Repositories\Exceptions\NotFoundResourceException;
 use Znck\Repositories\Exceptions\RepositoryException;
 use Znck\Repositories\Exceptions\ScoutNotFoundException;

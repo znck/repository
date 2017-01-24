@@ -1,6 +1,7 @@
 <?php
 
 namespace Znck\Repositories\Contracts;
+use Illuminate\Database\Eloquent\Model;
 
 interface Validating {
     /**
