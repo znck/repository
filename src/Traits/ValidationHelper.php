@@ -2,9 +2,9 @@
 
 namespace Znck\Repositories\Traits;
 
-use Znck\Repositories\Contracts\Model;
 use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\Model;
 
 trait ValidationHelper {
     /**
