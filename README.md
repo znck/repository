@@ -1,10 +1,12 @@
-Repository
-==========
+<div style="align: center; margin: 20px 0;">
+  <img src="http://znck.me/repository/assets/images/cover.png" />
+</div>
+
+Introduction
+------------
 Don't use your Eloquent models directly into your controllers, instead create a repository.
 
-> Read [docs](http://znck.me/repository) for installation, usage and contributing guides.
-
-![Repository](cover.png)
+> Read [docs](http://znck.me/repository/installation) for installation, usage and contributing guides.
 
 <p align="center">
   <a href="https://styleci.io/repos/42290942">

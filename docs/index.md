@@ -10,7 +10,7 @@ Getting Started
 
 Basic Usage
 -----------
-- [Create a Repository]({{ $docs_url }}/repository)
+- [Create a Repository]({{ $docs_url }}/create)
 - [Queries with Criteria]({{ $docs_url }}/criteria)
 - [Add Validation]({{ $docs_url }}/validation)
 

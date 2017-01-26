@@ -17,3 +17,13 @@ test:
 general:
   artifacts:
     - "build"
+
+
+deployment:
+  publish:
+    branch:
+      - master
+      - documentation
+    commands:
+      - composer global require --no-progress sereno/installer
+      - sereno deploy
