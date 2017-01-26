@@ -5,7 +5,7 @@ docs_repo: https://github.com/znck/repository
 docs_issues: https://github.com/znck/repository/issues
 
 github:
-  branch: gh-pagess
+  branch: gh-pages
 
 sereno:
     url: http://repository.znck.me/
