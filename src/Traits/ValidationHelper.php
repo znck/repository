@@ -47,22 +47,22 @@ trait ValidationHelper {
      * @return $this
      */
     public function validate(array $attributes, Model $model = null) {
+        if ($this->skipValidation) {
+            return $this;
+        }
+
         return $this->validateWith(
             $this->prepareAttributes($attributes),
             $this->getRules($attributes, $model)
         );
     }
 
-    public function validateWith(array $attributes, array $rules) {
-        if ($this->skipValidation) {
-            return $this;
-        }
-
+    public function validateWith(array $attributes, array $rules = null) {
         if (!$this->validator) {
             $this->validator = $this->app->make(Factory::class);
         }
 
-        $validator = $this->validator->make($attributes, $rules);
+        $validator = $this->validator->make($attributes, $rules ?? $this->getRules());
 
         if ($validator->fails()) {
             throw new ValidationException($validator);

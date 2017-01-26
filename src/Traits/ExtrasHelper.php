@@ -30,11 +30,16 @@ trait ExtrasHelper {
         $instance = $this->app->make($this->model, [$attributes]);
 
         if (method_exists($this, 'creating')) {
-            $status = $this->creating($instance, $attributes);
+            $this->onCreate($this->creating($instance, $attributes));
         } else {
-            $status = $instance->save();
+            $this->onCreate($instance->save());
         }
 
+        return $instance;
+    }
+
+    protected function onCreate(bool $status)
+    {
         if ($status !== true) {
             if ($this instanceof HasTransactions) $this->rollbackTransaction();
 
@@ -42,8 +47,6 @@ trait ExtrasHelper {
         }
 
         if ($this instanceof HasTransactions) $this->commitTransaction();
-
-        return $instance;
     }
 
     /**
@@ -71,11 +74,16 @@ trait ExtrasHelper {
         }
 
         if (method_exists($this, 'updating')) {
-            $status = $this->updating($instance, $attributes, $options);
+            $this->onUpdate($this->updating($instance, $attributes, $options));
         } else {
-            $status = $instance->update($attributes, $options);
+            $this->onUpdate($instance->update($attributes, $options));
         }
 
+        return $instance;
+    }
+
+    protected function onUpdate(bool $status)
+    {
         if ($status !== true) {
             if ($this instanceof HasTransactions) $this->rollbackTransaction();
 
@@ -86,9 +94,7 @@ trait ExtrasHelper {
             throw new UpdateResourceException('Server broke down while processing your input.');
         }
 
-        $this->commitTransaction();
-
-        return $instance;
+        if ($this instanceof HasTransactions) $this->commitTransaction();
     }
 
     /**
@@ -99,7 +105,6 @@ trait ExtrasHelper {
      * @return bool|null
      */
     public function delete($id) {
-        /* @var Model $instance */
         try {
             $instance = $id instanceof Model ? $id : $this->app->make(static::class)->find($id);
         } catch (NotFoundResourceException $e) {
@@ -107,23 +112,22 @@ trait ExtrasHelper {
         }
 
         if (method_exists($this, 'deleting')) {
-            $status = $this->deleting($instance);
-
-            if ($status !== true) {
-                if ($this instanceof HasTransactions) $this->rollbackTransaction();
-                throw new DeleteResourceException('Cannot delete this resource.');
-            }
-
-            return $status;
+            $this->onDelete($this->deleting($instance));
+        } else {
+            $this->onDelete($instance->delete());
         }
 
-        if ($status = $instance->delete()) {
-            if ($this instanceof HasTransactions) $this->commitTransaction();
+        return true;
+    }
 
-            return $status;
+    protected function onDelete(bool $status)
+    {
+        if ($status !== true) {
+            if ($this instanceof HasTransactions) $this->rollbackTransaction();
+
+            throw new DeleteResourceException('Cannot delete this resource.');
         }
 
         if ($this instanceof HasTransactions) $this->rollbackTransaction();
-        throw new DeleteResourceException('Server broke down while processing you input.');
     }
 }
