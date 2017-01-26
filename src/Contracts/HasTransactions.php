@@ -2,7 +2,8 @@
 
 namespace Znck\Repositories\Contracts;
 
-interface HasTransactions {
+interface HasTransactions
+{
     public function startTransaction();
 
     public function commitTransaction();

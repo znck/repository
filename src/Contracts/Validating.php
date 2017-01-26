@@ -1,9 +1,11 @@
 <?php
 
 namespace Znck\Repositories\Contracts;
+
 use Illuminate\Database\Eloquent\Model;
 
-interface Validating {
+interface Validating
+{
     /**
      * Validate attributes.
      *
@@ -17,8 +19,8 @@ interface Validating {
     /**
      * Validate with given rules.
      *
-     * @param  array  $attributes [description]
-     * @param  array  $rules      [description]
+     * @param array $attributes [description]
+     * @param array $rules      [description]
      *
      * @return $this
      */

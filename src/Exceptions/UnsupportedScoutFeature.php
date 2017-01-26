@@ -2,5 +2,4 @@
 
 class UnsupportedScoutFeature extends \Exception
 {
-
 }

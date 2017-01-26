@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Laravel\Scout\Searchable;
 use Znck\Repositories\Contracts\Criteria;
-use Znck\Repositories\Contracts\HasTransactions;
-use Znck\Repositories\Contracts\Validating;
 use Znck\Repositories\Exceptions\NotFoundResourceException;
 use Znck\Repositories\Exceptions\RepositoryException;
 use Znck\Repositories\Exceptions\ScoutNotFoundException;
@@ -61,41 +59,46 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      */
     protected $skipCriteria = false;
 
-    public function __construct(Application $app) {
+    public function __construct(Application $app)
+    {
         $this->app = $app;
         $this->criteria = new Collection();
         $this->boot();
     }
 
-    public function boot() {
-
+    public function boot()
+    {
     }
 
-    protected function makeModel() {
+    protected function makeModel()
+    {
         $class = $this->model;
 
-        if (!is_string($class) or !class_exists($class)) {
+        if (! is_string($class) or ! class_exists($class)) {
             throw new RepositoryException($class);
         }
 
         $this->instance = $this->app->make($class);
 
-        if (!$this->instance instanceof Model) {
+        if (! $this->instance instanceof Model) {
             throw new RepositoryException($class);
         }
 
         $this->query = $this->instance->newQuery();
     }
 
-    public static function register(array $map) {
+    public static function register(array $map)
+    {
         self::$repositories += $map;
     }
 
-    protected function isSearching() {
-        return !is_null($this->scout);
+    protected function isSearching()
+    {
+        return ! is_null($this->scout);
     }
 
-    protected function applyCriteria() {
+    protected function applyCriteria()
+    {
         $this->getQuery()->with($this->with);
 
         if ($this->skipCriteria) {
@@ -112,14 +115,14 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
             }
         }
 
-
         return $this;
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
-    public function getQuery() {
+    public function getQuery()
+    {
         if (is_null($this->query)) {
             $this->makeModel();
         }
@@ -132,7 +135,8 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      *
      * @return \Illuminate\Support\Collection|Criteria[]
      */
-    public function getCriteria() {
+    public function getCriteria()
+    {
         return $this->criteria;
     }
 
@@ -141,7 +145,8 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      *
      * @return $this
      */
-    public function clearCriteria() {
+    public function clearCriteria()
+    {
         $this->criteria = new Collection();
 
         return $this;
@@ -152,10 +157,12 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      *
      * @param string $columns
      *
-     * @return int
      * @throws \Znck\Repositories\Exceptions\UnsupportedScoutFeature
+     *
+     * @return int
      */
-    public function count($columns = '*') {
+    public function count($columns = '*')
+    {
         $this->applyCriteria();
 
         if ($this->isSearching()) {
@@ -172,7 +179,8 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function all($columns = ['*']) {
+    public function all($columns = ['*'])
+    {
         $this->applyCriteria();
 
         if ($this->isSearching()) {
@@ -186,11 +194,12 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      * Find a model by its primary key.
      *
      * @param string|int $id
-     * @param array $columns
+     * @param array      $columns
      *
      * @return Model
      */
-    public function find($id, $columns = ['*']) {
+    public function find($id, $columns = ['*'])
+    {
         $this->applyCriteria();
 
         if ($this->isSearching()) {
@@ -199,7 +208,7 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
 
         $result = $this->getQuery()->find($id, $columns);
 
-        if (!$result instanceof Model) {
+        if (! $result instanceof Model) {
             throw new NotFoundResourceException('Not found.');
         }
 
@@ -210,11 +219,12 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      * Find a model by given key. (This would return first matching object).
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      *
      * @return Model
      */
-    public function findBy(string $key, $value) {
+    public function findBy(string $key, $value)
+    {
         $this->applyCriteria();
 
         if ($this->isSearching()) {
@@ -223,7 +233,7 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
 
         $result = $this->getQuery()->where($key, $value)->first();
 
-        if (!$result instanceof Model) {
+        if (! $result instanceof Model) {
             throw new NotFoundResourceException('Not found.');
         }
 
@@ -236,10 +246,12 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      * @param array $ids
      * @param array $columns
      *
-     * @return \Illuminate\Database\Eloquent\Collection
      * @throws \Znck\Repositories\Exceptions\UnsupportedScoutFeature
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function findMany(array $ids, $columns = ['*']) {
+    public function findMany(array $ids, $columns = ['*'])
+    {
         $this->applyCriteria();
 
         if ($this->isSearching()) {
@@ -254,7 +266,8 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
     /**
      * @return Model
      */
-    public function getModel(): Model {
+    public function getModel(): Model
+    {
         if (is_null($this->instance)) {
             $this->makeModel();
         }
@@ -269,7 +282,8 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function first($columns = ['*']) {
+    public function first($columns = ['*'])
+    {
         $this->applyCriteria();
 
         if ($this->isSearching()) {
@@ -282,14 +296,15 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
     /**
      * Paginate the given query.
      *
-     * @param int $perPage
-     * @param array $columns
-     * @param string $pageName
+     * @param int      $perPage
+     * @param array    $columns
+     * @param string   $pageName
      * @param int|null $page
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
+    public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
+    {
         $this->applyCriteria();
 
         if ($this->isSearching()) {
@@ -308,14 +323,15 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
     /**
      * Paginate the given query into a simple paginator.
      *
-     * @param int $perPage
-     * @param array $columns
-     * @param string $pageName
+     * @param int      $perPage
+     * @param array    $columns
+     * @param string   $pageName
      * @param int|null $page
      *
      * @return \Illuminate\Contracts\Pagination\Paginator
      */
-    public function simplePaginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
+    public function simplePaginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
+    {
         $this->applyCriteria();
 
         if ($this->isSearching()) {
@@ -334,14 +350,16 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
     /**
      * Find models matching query string.
      *
-     * @param string $q
+     * @param string            $q
      * @param callable|\Closure $callback
      *
-     * @return $this
      * @throws \Exception
+     *
+     * @return $this
      */
-    public function search(string $q, $callback = null) {
-        if (!in_array(Searchable::class, class_uses_recursive($this->model))) {
+    public function search(string $q, $callback = null)
+    {
+        if (! in_array(Searchable::class, class_uses_recursive($this->model))) {
             throw new ScoutNotFoundException($this->model);
         }
 
@@ -364,7 +382,8 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      *
      * @return Criteria
      */
-    public function popCriteria(Criteria $criteria = null) : Criteria {
+    public function popCriteria(Criteria $criteria = null) : Criteria
+    {
         if (is_null($criteria)) {
             return $this->getCriteria()->pop();
         }
@@ -388,7 +407,8 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      *
      * @return $this
      */
-    public function pushCriteria(Criteria $criteria) {
+    public function pushCriteria(Criteria $criteria)
+    {
         $this->getCriteria()->push($criteria);
 
         return $this;
@@ -399,7 +419,8 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      *
      * @return \Znck\Repositories\Contracts\Repository
      */
-    public function refresh() {
+    public function refresh()
+    {
         $this->query = $this->getModel()->newQuery();
         $this->scout = null;
         $this->boot();
@@ -412,7 +433,8 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      *
      * @return $this
      */
-    public function skipCriteria($skip = true) {
+    public function skipCriteria($skip = true)
+    {
         $this->skipCriteria = $skip;
 
         return $this;
@@ -422,20 +444,22 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
      * Get result of the query.
      *
      * @param string|array|\Closure $column
-     * @param string $operator
-     * @param mixed $value
-     * @param string $boolean
+     * @param string                $operator
+     * @param mixed                 $value
+     * @param string                $boolean
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function where($column, $operator = null, $value = null, $boolean = 'and') {
+    public function where($column, $operator = null, $value = null, $boolean = 'and')
+    {
         $this->applyCriteria();
 
         return $this->getQuery()->where($column, $operator, $value, $boolean)->get();
     }
 
-    public function with($relations) {
-        $this->with = array_merge($this->with, (is_array($relations) ? $relations : (array)$relations));
+    public function with($relations)
+    {
+        $this->with = array_merge($this->with, (is_array($relations) ? $relations : (array) $relations));
 
         return $this;
     }
