@@ -1,5 +1,5 @@
 <div style="align: center; margin: 20px 0;">
-  <img src="http://znck.me/repository/assets/images/cover.png" />
+  <img src="http://repository.znck.me/assets/images/cover.png" />
 </div>
 
 Introduction
@@ -44,7 +44,7 @@ If you discover any security related issues, please email <hi@znck.me> instead o
 
 ## License
 
-The MIT License (MIT). Please see [License File](http://znck.me/repository/license) for more information.
+The MIT License (MIT). Please see [License File](http://repository.znck.me/license) for more information.
 
 [link-author]: https://github.com/znck
-[link-contributors]: ../../contributors
+[link-contributors]: https://github.com/znck/repository/contributors
