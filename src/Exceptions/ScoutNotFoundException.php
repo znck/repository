@@ -5,7 +5,8 @@ use Laravel\Scout\Searchable;
 
 class ScoutNotFoundException extends Exception
 {
-    public function __construct(string $model) {
+    public function __construct(string $model)
+    {
         parent::__construct("{$model} should use ".Searchable::class);
     }
 }

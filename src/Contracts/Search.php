@@ -10,8 +10,7 @@ interface Search extends Query
     /**
      * Find models matching query string.
      *
-     * @param string $q
-     *
+     * @param string            $q
      * @param callable|\Closure $callback
      *
      * @return $this

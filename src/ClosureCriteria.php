@@ -13,7 +13,8 @@ class ClosureCriteria implements Criteria
      *
      * @param Closure $callable
      */
-    public function __construct(Closure $callable) {
+    public function __construct(Closure $callable)
+    {
         $this->callable = $callable;
     }
 
@@ -21,11 +22,12 @@ class ClosureCriteria implements Criteria
      * Apply criteria in query repository.
      *
      * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder|\Laravel\Scout\Builder $model
-     * @param RepositoryContract $repository
+     * @param RepositoryContract                                                                              $repository
      *
      * @return mixed|void
      */
-    public function apply($model, RepositoryContract $repository) {
+    public function apply($model, RepositoryContract $repository)
+    {
         $callback = $this->callable;
 
         $callback($model, $repository);
