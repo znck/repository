@@ -15,28 +15,6 @@
     <meta property="og:image" content="@url('assets/images/cover.png')">
     <meta property="twitter:image" content="@url('assets/images/cover.png')">
 
-    <link rel="manifest" href="http://znck.me/assets/icons/manifest.json">
-
-    <link rel="apple-touch-icon" sizes="57x57" href="http://znck.me/assets/icons/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="http://znck.me/assets/icons/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="http://znck.me/assets/icons/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="http://znck.me/assets/icons/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="http://znck.me/assets/icons/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="http://znck.me/assets/icons/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="http://znck.me/assets/icons/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="http://znck.me/assets/icons/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="http://znck.me/assets/icons/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="http://znck.me/assets/icons/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="http://znck.me/assets/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="http://znck.me/assets/icons/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="http://znck.me/assets/icons/favicon-16x16.png">
-
-    <meta name="msapplication-TileColor" content="#ff574a">
-    <meta name="msapplication-TileImage" content="http://znck.me/assets/icons/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ff574a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-
     <link rel="stylesheet" href="http://znck.me/assets/css/app.css">
 </head>
 
