@@ -1,5 +1,5 @@
 siteName: Repository
-siteDescription: Eloquent + Repository = Simpler Controllers & Freedom
+siteDescription: Eloquent + Repository = Better Controllers (Repository pattern for Laravel)
 docs_edit_url: https://github.com/znck/repository/edit/master/docs
 docs_repo: https://github.com/znck/repository
 docs_issues: https://github.com/znck/repository/issues

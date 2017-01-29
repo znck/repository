@@ -1,12 +1,12 @@
 <div style="align: center; margin: 20px 0;">
-  <img src="http://repository.znck.me/assets/images/cover.png" />
+  <img src="http://repository.znck.me/assets/images/logo.png" />
 </div>
 
 Introduction
 ------------
 Don't use your Eloquent models directly into your controllers, instead create a repository.
 
-> Read [docs](http://znck.me/repository/installation) for installation, usage and contributing guides.
+> Read [docs](http://repository.znck.me/installation) for installation, usage and contributing guides.
 
 <p align="center">
   <a href="https://styleci.io/repos/42290942">

@@ -5,15 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>@yield('pageTitle') {{$siteName}} - Rahul Kadyan</title>
-    <meta name="og:title" content="@yield('pageTitle') {{$siteName}}">
-    <meta name="twitter:title" content="@yield('pageTitle') {{$siteName}}">
-
     <meta name="description" content="@yield('pageDescription', $siteDescription)">
-    <meta name="og:description" content="@yield('pageDescription', $siteDescription)">
-    <meta name="twitter:description" content="@yield('pageDescription', $siteDescription)">
 
-    <meta property="og:image" content="@url('assets/images/cover.png')">
-    <meta property="twitter:image" content="@url('assets/images/cover.png')">
+    <meta name="og:title" content="@yield('pageTitle') {{$siteName}}">
+    <meta name="og:description" content="@yield('pageDescription', $siteDescription)">
+    <meta property="og:image" content="@url('assets/images/opengraph.png')">
+
+    <meta name="twitter:title" content="@yield('pageTitle') {{$siteName}}">
+    <meta name="twitter:description" content="@yield('pageDescription', $siteDescription)">
+    <meta property="twitter:image" content="@url('/assets/images/twitter.png')">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@rahulkadyan7" />
+
+    <meta name="author" content="http://znck.me/humans.txt" />
 
     <link rel="stylesheet" href="http://znck.me/assets/css/app.css">
 </head>
