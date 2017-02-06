@@ -3,10 +3,11 @@
 namespace Znck\Repositories\Traits;
 
 use Illuminate\Contracts\Validation\Factory;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
 
-trait ValidationHelper {
+trait ValidationHelper
+{
     /**
      * @var \Illuminate\Contracts\Validation\Factory
      */
@@ -31,7 +32,8 @@ trait ValidationHelper {
      *
      * @return \Znck\Repositories\Contracts\Repository
      */
-    public function skipValidation($skip = true) {
+    public function skipValidation($skip = true)
+    {
         $this->skipValidation = $skip;
 
         return $this;
@@ -44,9 +46,11 @@ trait ValidationHelper {
      * @param Model $model
      *
      * @throws \Illuminate\Validation\ValidationException
+     *
      * @return $this
      */
-    public function validate(array $attributes, Model $model = null) {
+    public function validate(array $attributes, Model $model = null)
+    {
         if ($this->skipValidation) {
             return $this;
         }
@@ -57,8 +61,9 @@ trait ValidationHelper {
         );
     }
 
-    public function validateWith(array $attributes, array $rules = null) {
-        if (!$this->validator) {
+    public function validateWith(array $attributes, array $rules = null)
+    {
+        if (! $this->validator) {
             $this->validator = $this->app->make(Factory::class);
         }
 
@@ -71,17 +76,19 @@ trait ValidationHelper {
         return $this;
     }
 
-    public function prepareAttributes(array $attributes) {
+    public function prepareAttributes(array $attributes)
+    {
         return $attributes;
     }
 
     /**
-     * @param array $attributes
+     * @param array                               $attributes
      * @param \Illuminate\Database\Eloquent\Model $model
      *
      * @return array
      */
-    public function getRules(array $attributes = [], Model $model = null): array {
+    public function getRules(array $attributes = [], Model $model = null): array
+    {
         if (is_null($model)) {
             return $this->getCreateRules($attributes);
         }
@@ -90,11 +97,12 @@ trait ValidationHelper {
     }
 
     /**
+     * @param array $attributes [description]
      *
-     * @param  array  $attributes [description]
-     * @return array             [description]
+     * @return array [description]
      */
-    public function getCreateRules(array $attributes) {
+    public function getCreateRules(array $attributes)
+    {
         return $this->rules;
     }
 
@@ -105,7 +113,8 @@ trait ValidationHelper {
      *
      * @return array
      */
-    public function getUpdateRules(array $rules, array $attributes, $model) {
+    public function getUpdateRules(array $rules, array $attributes, $model)
+    {
         return array_only($rules, array_keys($attributes));
     }
 }

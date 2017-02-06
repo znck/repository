@@ -1,16 +1,18 @@
 <?php
 
 namespace Znck\Repositories\Traits;
+
 use Illuminate\Database\Eloquent\Model;
-use Znck\Repositories\Contracts\Validating;
+use Illuminate\Validation\ValidationException;
 use Znck\Repositories\Contracts\HasTransactions;
-use Znck\Repositories\Exceptions\StoreResourceException;
-use Znck\Repositories\Exceptions\UpdateResourceException;
+use Znck\Repositories\Contracts\Validating;
 use Znck\Repositories\Exceptions\DeleteResourceException;
 use Znck\Repositories\Exceptions\NotFoundResourceException;
-use Illuminate\Validation\ValidationException;
+use Znck\Repositories\Exceptions\StoreResourceException;
+use Znck\Repositories\Exceptions\UpdateResourceException;
 
-trait ExtrasHelper {
+trait ExtrasHelper
+{
     /**
      * Save a new model and return the instance.
      *
@@ -18,7 +20,8 @@ trait ExtrasHelper {
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function create(array $attributes) {
+    public function create(array $attributes)
+    {
         if ($this instanceof Validating) {
             try {
                 $this->validate($attributes);
@@ -41,24 +44,29 @@ trait ExtrasHelper {
     protected function onCreate(bool $status)
     {
         if ($status !== true) {
-            if ($this instanceof HasTransactions) $this->rollbackTransaction();
+            if ($this instanceof HasTransactions) {
+                $this->rollbackTransaction();
+            }
 
             throw new StoreResourceException('Server broke down while processing your input.');
         }
 
-        if ($this instanceof HasTransactions) $this->commitTransaction();
+        if ($this instanceof HasTransactions) {
+            $this->commitTransaction();
+        }
     }
 
     /**
      * Update the model in the database.
      *
      * @param \Illuminate\Database\Eloquent\Model|string|int $id
-     * @param array $attributes
-     * @param array $options
+     * @param array                                          $attributes
+     * @param array                                          $options
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function update($id, array $attributes, array $options = []) {
+    public function update($id, array $attributes, array $options = [])
+    {
         try {
             $instance = $id instanceof Model ? $id : $this->app->make(static::class)->find($id);
         } catch (NotFoundResourceException $e) {
@@ -85,16 +93,20 @@ trait ExtrasHelper {
     protected function onUpdate(bool $status)
     {
         if ($status !== true) {
-            if ($this instanceof HasTransactions) $this->rollbackTransaction();
+            if ($this instanceof HasTransactions) {
+                $this->rollbackTransaction();
+            }
 
-            if ($status !== true and !$instance->isDirty()) {
+            if ($status !== true and ! $instance->isDirty()) {
                 new UpdateResourceException('Nothing updated since last time.');
             }
 
             throw new UpdateResourceException('Server broke down while processing your input.');
         }
 
-        if ($this instanceof HasTransactions) $this->commitTransaction();
+        if ($this instanceof HasTransactions) {
+            $this->commitTransaction();
+        }
     }
 
     /**
@@ -104,7 +116,8 @@ trait ExtrasHelper {
      *
      * @return bool|null
      */
-    public function delete($id) {
+    public function delete($id)
+    {
         try {
             $instance = $id instanceof Model ? $id : $this->app->make(static::class)->find($id);
         } catch (NotFoundResourceException $e) {
@@ -123,11 +136,15 @@ trait ExtrasHelper {
     protected function onDelete(bool $status)
     {
         if ($status !== true) {
-            if ($this instanceof HasTransactions) $this->rollbackTransaction();
+            if ($this instanceof HasTransactions) {
+                $this->rollbackTransaction();
+            }
 
             throw new DeleteResourceException('Cannot delete this resource.');
         }
 
-        if ($this instanceof HasTransactions) $this->rollbackTransaction();
+        if ($this instanceof HasTransactions) {
+            $this->rollbackTransaction();
+        }
     }
 }

@@ -2,28 +2,31 @@
 
 namespace Znck\Repositories\Traits;
 
-
-trait TransactionHelper {
+trait TransactionHelper
+{
     /**
      * A flag to denote whether running in a transaction or not.
      *
-     * @var boolean
+     * @var bool
      */
     protected $inTransaction = false;
 
-    public function startTransaction() {
+    public function startTransaction()
+    {
         $this->app->make('db')->beginTransaction();
         $this->inTransaction = true;
     }
 
-    public function commitTransaction() {
-        if (!$this->inTransaction) {
+    public function commitTransaction()
+    {
+        if (! $this->inTransaction) {
             $this->app->make('db')->commit();
             $this->inTransaction = false;
         }
     }
 
-    public function rollbackTransaction() {
+    public function rollbackTransaction()
+    {
         if ($this->inTransaction) {
             $this->app->make('db')->rollback();
             $this->inTransaction = false;

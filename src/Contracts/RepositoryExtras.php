@@ -2,7 +2,8 @@
 
 namespace Znck\Repositories\Contracts;
 
-interface RepositoryExtras {
+interface RepositoryExtras
+{
     /**
      * Save a new model and return the instance.
      *
@@ -16,8 +17,8 @@ interface RepositoryExtras {
      * Update the model in the database.
      *
      * @param Model|string|int $id
-     * @param array $attributes
-     * @param array $options
+     * @param array            $attributes
+     * @param array            $options
      *
      * @return Model
      */
