@@ -469,7 +469,9 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
         $query = $this->getQuery();
         $result = call_user_func_array([$query, $name], $arguments);
 
-        if ($query === $result) return $this;
+        if ($query === $result) {
+            return $this;
+        }
 
         return $result;
     }
