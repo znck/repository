@@ -463,4 +463,16 @@ abstract class Repository implements Contracts\Repository, Contracts\Validating,
 
         return $this;
     }
+
+    public function __call($name, $arguments)
+    {
+        $query = $this->getQuery();
+        $result = call_user_func_array([$query, $name], $arguments);
+
+        if ($query === $result) {
+            return $this;
+        }
+
+        return $result;
+    }
 }
